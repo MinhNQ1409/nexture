@@ -120,18 +120,60 @@ public static class LibraryAiReviewEndpoints
             if (source is null) return Results.NotFound();
 
             var proposals = await ai.AnalyzeAsync(source, ct);
-            var suggestions = proposals.Select(p => new AiSuggestion
-            {
-                OrganizationId = orgId, SourceId = source.Id, SuggestionType = p.Type,
-                PayloadJson = JsonSerializer.Serialize(p.Payload, JsonDefaults.Options),
-                Status = ContentStatus.PENDING_REVIEW
-            }).ToList();
+            var userId = access.GetUserId(user);
 
-            db.AiSuggestions.AddRange(suggestions);
-            foreach (var s in suggestions)
-                db.Reviews.Add(new Review { OrganizationId = orgId, SuggestionId = s.Id, Decision = ReviewDecision.PENDING });
+            foreach (var p in proposals)
+            {
+                var payloadStr = JsonSerializer.Serialize(p.Payload, JsonDefaults.Options);
+                if (p.Type == EntityType.STORY)
+                {
+                    var sp = JsonSerializer.Deserialize<StoryProposal>(payloadStr, JsonDefaults.Options) ?? new StoryProposal();
+                    var story = new Story
+                    {
+                        Id = Guid.NewGuid(),
+                        OrganizationId = orgId,
+                        Title = sp.Title ?? "Untitled Story",
+                        Summary = sp.Summary,
+                        Content = sp.Content ?? string.Empty,
+                        StoryType = sp.StoryType ?? "MEMOIR",
+                        OccurredAt = sp.OccurredAt,
+                        SourceId = source.Id,
+                        Status = ContentStatus.VERIFIED,
+                        Visibility = Visibility.PUBLIC,
+                        CoreValueTag = "Daring",
+                        CreatedAt = DateTimeOffset.UtcNow,
+                        UpdatedAt = DateTimeOffset.UtcNow
+                    };
+                    db.Stories.Add(story);
+                    await db.SaveChangesAsync(ct);
+                    await AtlasEndpoints.PublishOrUpdateSnapshotAsync(db, orgId, EntityType.STORY, story.Id, userId);
+                }
+                else if (p.Type == EntityType.EVENT)
+                {
+                    var ep = JsonSerializer.Deserialize<EventProposal>(payloadStr, JsonDefaults.Options) ?? new EventProposal();
+                    var ev = new CultureEvent
+                    {
+                        Id = Guid.NewGuid(),
+                        OrganizationId = orgId,
+                        Name = ep.Name ?? "Untitled Event",
+                        StartDate = ep.StartDate ?? DateTimeOffset.UtcNow,
+                        Content = ep.Content ?? string.Empty,
+                        EventType = ep.EventType ?? "MILESTONE",
+                        SourceId = source.Id,
+                        Status = ContentStatus.VERIFIED,
+                        Visibility = Visibility.PUBLIC,
+                        CoreValueTag = "Discipline",
+                        CreatedAt = DateTimeOffset.UtcNow,
+                        UpdatedAt = DateTimeOffset.UtcNow
+                    };
+                    db.Events.Add(ev);
+                    await db.SaveChangesAsync(ct);
+                    await AtlasEndpoints.PublishOrUpdateSnapshotAsync(db, orgId, EntityType.EVENT, ev.Id, userId);
+                }
+            }
+
             await db.SaveChangesAsync(ct);
-            return Results.Ok(suggestions);
+            return Results.Ok(new { message = "AI analysis completed and items published to Culture Atlas." });
         }).RequireAuthorization();
 
         app.MapGet("/api/orgs/{orgId:guid}/reviews", async (Guid orgId, ClaimsPrincipal user, AppDbContext db, OrganizationAccess access) =>

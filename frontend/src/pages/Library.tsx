@@ -90,7 +90,7 @@ export default function Library() {
     setNotification('')
     try {
       await api(`/orgs/${org}/ai/analyze/${id}`, { method: 'POST' })
-      setNotification('AI Structuring Engine đã phân tích thành công! Các đề xuất Story/Event đang chờ bạn duyệt trong Pending Review.')
+      setNotification('AI Structuring Engine đã phân tích thành công và tự động tạo Stories/Events trực tiếp lên Culture Atlas!')
     } catch (err) {
       alert(`Lỗi AI phân tích: ${err}`)
     } finally {
@@ -137,8 +137,8 @@ export default function Library() {
       {notification && (
         <div className="hub-notification-box">
           <span>{notification}</span>
-          <Link to="/reviews" className="btn-link-action">
-            Xem Pending Review
+          <Link to="/stories" className="btn-link-action">
+            Xem Culture Stories
           </Link>
         </div>
       )}

@@ -7,7 +7,6 @@ const items = [
   { to: '/stories', label: 'Culture Stories' },
   { to: '/events', label: 'Culture Events' },
   { to: '/people-products', label: 'People & Products' },
-  { to: '/reviews', label: 'Pending Review' },
   { to: '/timeline', label: 'Culture Timeline' },
   { to: '/atlas-management', label: 'Culture Atlas' }
 ]

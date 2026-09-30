@@ -36,8 +36,9 @@ public static class ContentEndpoints
             if (m is null || !OrganizationAccess.CanEdit(m.Role)) return Results.Forbid();
             req.Id = Guid.NewGuid();
             req.OrganizationId = orgId;
+            if (req.Status != ContentStatus.DRAFT) req.Status = ContentStatus.VERIFIED;
+            if (req.Visibility == 0) req.Visibility = Visibility.PUBLIC;
             var autoPublish = req.Status == ContentStatus.VERIFIED && req.Visibility == Visibility.PUBLIC;
-            if (!autoPublish) req.Status = ContentStatus.DRAFT;
             req.CreatedAt = req.UpdatedAt = DateTimeOffset.UtcNow;
             db.Stories.Add(req);
             await db.SaveChangesAsync();
@@ -65,8 +66,7 @@ public static class ContentEndpoints
             row.UpdatedAt = DateTimeOffset.UtcNow;
             await db.SaveChangesAsync();
 
-            var isPublished = await db.AtlasPublications.AnyAsync(x => x.OrganizationId == orgId && x.EntityType == EntityType.STORY && x.EntityId == id && x.Status == AtlasPublicationStatus.PUBLISHED);
-            if (isPublished && row.Status == ContentStatus.VERIFIED && row.Visibility == Visibility.PUBLIC)
+            if (row.Status == ContentStatus.VERIFIED && row.Visibility == Visibility.PUBLIC)
             {
                 await AtlasEndpoints.PublishOrUpdateSnapshotAsync(db, orgId, EntityType.STORY, id, access.GetUserId(user));
                 await db.SaveChangesAsync();
@@ -122,8 +122,9 @@ public static class ContentEndpoints
             if (m is null || !OrganizationAccess.CanEdit(m.Role)) return Results.Forbid();
             req.Id = Guid.NewGuid();
             req.OrganizationId = orgId;
+            if (req.Status != ContentStatus.DRAFT) req.Status = ContentStatus.VERIFIED;
+            if (req.Visibility == 0) req.Visibility = Visibility.PUBLIC;
             var autoPublish = req.Status == ContentStatus.VERIFIED && req.Visibility == Visibility.PUBLIC;
-            if (!autoPublish) req.Status = ContentStatus.DRAFT;
             req.CreatedAt = req.UpdatedAt = DateTimeOffset.UtcNow;
             db.Events.Add(req);
             await db.SaveChangesAsync();
@@ -150,8 +151,7 @@ public static class ContentEndpoints
             row.UpdatedAt = DateTimeOffset.UtcNow;
             await db.SaveChangesAsync();
 
-            var isPublished = await db.AtlasPublications.AnyAsync(x => x.OrganizationId == orgId && x.EntityType == EntityType.EVENT && x.EntityId == id && x.Status == AtlasPublicationStatus.PUBLISHED);
-            if (isPublished && row.Status == ContentStatus.VERIFIED && row.Visibility == Visibility.PUBLIC)
+            if (row.Status == ContentStatus.VERIFIED && row.Visibility == Visibility.PUBLIC)
             {
                 await AtlasEndpoints.PublishOrUpdateSnapshotAsync(db, orgId, EntityType.EVENT, id, access.GetUserId(user));
                 await db.SaveChangesAsync();
@@ -207,8 +207,9 @@ public static class ContentEndpoints
             if (m is null || !OrganizationAccess.CanEdit(m.Role)) return Results.Forbid();
             req.Id = Guid.NewGuid();
             req.OrganizationId = orgId;
+            if (req.Status != ContentStatus.DRAFT) req.Status = ContentStatus.VERIFIED;
+            if (req.Visibility == 0) req.Visibility = Visibility.PUBLIC;
             var autoPublish = req.Status == ContentStatus.VERIFIED && req.Visibility == Visibility.PUBLIC;
-            if (!autoPublish) req.Status = ContentStatus.DRAFT;
             req.CreatedAt = req.UpdatedAt = DateTimeOffset.UtcNow;
             db.People.Add(req);
             await db.SaveChangesAsync();
@@ -236,8 +237,7 @@ public static class ContentEndpoints
             row.UpdatedAt = DateTimeOffset.UtcNow;
             await db.SaveChangesAsync();
 
-            var isPublished = await db.AtlasPublications.AnyAsync(x => x.OrganizationId == orgId && x.EntityType == EntityType.PERSON && x.EntityId == id && x.Status == AtlasPublicationStatus.PUBLISHED);
-            if (isPublished && row.Status == ContentStatus.VERIFIED && row.Visibility == Visibility.PUBLIC)
+            if (row.Status == ContentStatus.VERIFIED && row.Visibility == Visibility.PUBLIC)
             {
                 await AtlasEndpoints.PublishOrUpdateSnapshotAsync(db, orgId, EntityType.PERSON, id, access.GetUserId(user));
                 await db.SaveChangesAsync();
@@ -293,8 +293,9 @@ public static class ContentEndpoints
             if (m is null || !OrganizationAccess.CanEdit(m.Role)) return Results.Forbid();
             req.Id = Guid.NewGuid();
             req.OrganizationId = orgId;
+            if (req.Status != ContentStatus.DRAFT) req.Status = ContentStatus.VERIFIED;
+            if (req.Visibility == 0) req.Visibility = Visibility.PUBLIC;
             var autoPublish = req.Status == ContentStatus.VERIFIED && req.Visibility == Visibility.PUBLIC;
-            if (!autoPublish) req.Status = ContentStatus.DRAFT;
             req.CreatedAt = req.UpdatedAt = DateTimeOffset.UtcNow;
             db.ProductsProjects.Add(req);
             await db.SaveChangesAsync();
@@ -321,8 +322,7 @@ public static class ContentEndpoints
             row.UpdatedAt = DateTimeOffset.UtcNow;
             await db.SaveChangesAsync();
 
-            var isPublished = await db.AtlasPublications.AnyAsync(x => x.OrganizationId == orgId && x.EntityType == EntityType.PRODUCT && x.EntityId == id && x.Status == AtlasPublicationStatus.PUBLISHED);
-            if (isPublished && row.Status == ContentStatus.VERIFIED && row.Visibility == Visibility.PUBLIC)
+            if (row.Status == ContentStatus.VERIFIED && row.Visibility == Visibility.PUBLIC)
             {
                 await AtlasEndpoints.PublishOrUpdateSnapshotAsync(db, orgId, EntityType.PRODUCT, id, access.GetUserId(user));
                 await db.SaveChangesAsync();

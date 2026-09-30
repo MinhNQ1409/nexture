@@ -7,7 +7,6 @@ import Library from './pages/Library'
 import Stories from './pages/Stories'
 import Events from './pages/Events'
 import PeopleProducts from './pages/PeopleProducts'
-import Reviews from './pages/Reviews'
 import Timeline from './pages/Timeline'
 import AtlasManagement from './pages/AtlasManagement'
 import PublicAtlasHome from './pages/PublicAtlasHome'
@@ -27,7 +26,7 @@ export default function App(){
       <Route path="/stories" element={<Stories/>}/>
       <Route path="/events" element={<Events/>}/>
       <Route path="/people-products" element={<PeopleProducts/>}/>
-      <Route path="/reviews" element={<Reviews/>}/>
+      <Route path="/reviews" element={<Navigate to="/hub" replace/>}/>
       <Route path="/timeline" element={<Timeline/>}/>
       <Route path="/atlas-management" element={<AtlasManagement/>}/>
     </Route>

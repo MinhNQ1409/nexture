@@ -57,7 +57,7 @@ export default function Timeline() {
           <div className="loading-card">Đang dựng dòng thời gian…</div>
         ) : items.length === 0 ? (
           <div className="empty-card">
-            Chưa có sự kiện nào đạt trạng thái VERIFIED. Hãy vào mục <Link to="/events">Culture Events</Link> hoặc <Link to="/reviews">Pending Review</Link> để xác thực các sự kiện đầu tiên!
+            Chưa có sự kiện nào trong dòng thời gian. Hãy vào mục <Link to="/events">Culture Events</Link> để ghi nhận các sự kiện đầu tiên!
           </div>
         ) : (
           <div className="hub-timeline-vertical">
@@ -68,9 +68,6 @@ export default function Timeline() {
                   <div className="hub-timeline-card-header">
                     <div className="badges-group">
                       <span className="badge-type">{ev.eventType}</span>
-                      <span className={`badge-vis ${ev.visibility.toLowerCase()}`}>
-                        {ev.visibility}
-                      </span>
                     </div>
                     <time className="timeline-date-label">
                       {ev.startDate

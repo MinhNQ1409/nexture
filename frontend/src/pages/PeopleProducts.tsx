@@ -59,8 +59,7 @@ export default function PeopleProducts() {
   const [bio, setBio] = useState('')
   const [notableContribution, setNotableContribution] = useState('')
   const [joinedAt, setJoinedAt] = useState(new Date().toISOString().slice(0, 10))
-  const [personVisibility, setPersonVisibility] = useState('PUBLIC')
-  const [personPublishDirectly, setPersonPublishDirectly] = useState(true)
+  const [editingPersonId, setEditingPersonId] = useState<string | null>(null)
   const [showPersonModal, setShowPersonModal] = useState(false)
 
   // Product Form
@@ -69,8 +68,7 @@ export default function PeopleProducts() {
   const [productCoreValueTag, setProductCoreValueTag] = useState('Creativity')
   const [description, setDescription] = useState('')
   const [startedAt, setStartedAt] = useState(new Date().toISOString().slice(0, 10))
-  const [productVisibility, setProductVisibility] = useState('PUBLIC')
-  const [productPublishDirectly, setProductPublishDirectly] = useState(true)
+  const [editingProductId, setEditingProductId] = useState<string | null>(null)
   const [showProductModal, setShowProductModal] = useState(false)
 
   async function load() {
@@ -93,64 +91,124 @@ export default function PeopleProducts() {
     load()
   }, [org])
 
-  async function handleAddPerson(e: FormEvent) {
+  function resetPersonForm() {
+    setFullName('')
+    setRoleTitle('')
+    setBio('')
+    setNotableContribution('')
+    setPersonCoreValueTag('Trust')
+    setJoinedAt(new Date().toISOString().slice(0, 10))
+    setEditingPersonId(null)
+    setShowPersonModal(false)
+  }
+
+  function startEditPerson(p: PersonItem) {
+    setEditingPersonId(p.id)
+    setFullName(p.fullName)
+    setRoleTitle(p.roleTitle || '')
+    setBio(p.bio || '')
+    setNotableContribution(p.notableContribution || '')
+    setPersonCoreValueTag(p.coreValueTag || 'Trust')
+    setJoinedAt(p.joinedAt ? p.joinedAt.slice(0, 10) : new Date().toISOString().slice(0, 10))
+    setShowPersonModal(true)
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+  }
+
+  async function handleSavePerson(e: FormEvent) {
     e.preventDefault()
     if (!fullName.trim()) return
     setBusy('person')
     try {
-      await api(`/orgs/${org}/people`, {
-        method: 'POST',
-        body: JSON.stringify({
-          fullName,
-          roleTitle,
-          bio,
-          notableContribution,
-          coreValueTag: personCoreValueTag,
-          joinedAt: joinedAt ? new Date(joinedAt).toISOString() : null,
-          status: personPublishDirectly ? 'VERIFIED' : 'DRAFT',
-          visibility: personPublishDirectly ? 'PUBLIC' : personVisibility
+      const payload = {
+        fullName,
+        roleTitle,
+        bio,
+        notableContribution,
+        coreValueTag: personCoreValueTag,
+        joinedAt: joinedAt ? new Date(joinedAt).toISOString() : null,
+        status: 'VERIFIED',
+        visibility: 'PUBLIC'
+      }
+
+      if (editingPersonId) {
+        await api(`/orgs/${org}/people/${editingPersonId}`, {
+          method: 'PUT',
+          body: JSON.stringify(payload)
         })
-      })
-      setFullName('')
-      setRoleTitle('')
-      setBio('')
-      setNotableContribution('')
-      setShowPersonModal(false)
-      setNotification(personPublishDirectly ? 'Đã thêm và xuất bản hồ sơ Đại sứ lên Culture Atlas!' : 'Đã lưu hồ sơ đại sứ vào danh sách nội bộ.')
+        setNotification(`Đã cập nhật hồ sơ "${fullName}" và đồng bộ lên Culture Atlas!`)
+      } else {
+        await api(`/orgs/${org}/people`, {
+          method: 'POST',
+          body: JSON.stringify(payload)
+        })
+        setNotification(`Đã thêm và đăng hồ sơ Đại sứ "${fullName}" lên Culture Atlas thành công!`)
+      }
+
+      resetPersonForm()
       setTimeout(() => setNotification(''), 4000)
       await load()
     } catch (err) {
-      alert(`Lỗi tạo hồ sơ nhân sự: ${err}`)
+      alert(`Lỗi lưu hồ sơ nhân sự: ${err}`)
     } finally {
       setBusy('')
     }
   }
 
-  async function handleAddProduct(e: FormEvent) {
+  function resetProductForm() {
+    setProductName('')
+    setDescription('')
+    setProductKind('ENTERPRISE_PLATFORM')
+    setProductCoreValueTag('Creativity')
+    setStartedAt(new Date().toISOString().slice(0, 10))
+    setEditingProductId(null)
+    setShowProductModal(false)
+  }
+
+  function startEditProduct(pr: ProductItem) {
+    setEditingProductId(pr.id)
+    setProductName(pr.name)
+    setProductKind(pr.kind || 'ENTERPRISE_PLATFORM')
+    setProductCoreValueTag(pr.coreValueTag || 'Creativity')
+    setDescription(pr.description || '')
+    setStartedAt(pr.startedAt ? pr.startedAt.slice(0, 10) : new Date().toISOString().slice(0, 10))
+    setShowProductModal(true)
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+  }
+
+  async function handleSaveProduct(e: FormEvent) {
     e.preventDefault()
     if (!productName.trim()) return
     setBusy('product')
     try {
-      await api(`/orgs/${org}/products`, {
-        method: 'POST',
-        body: JSON.stringify({
-          name: productName,
-          kind: productKind,
-          description,
-          coreValueTag: productCoreValueTag,
-          startedAt: startedAt ? new Date(startedAt).toISOString() : null,
-          status: productPublishDirectly ? 'VERIFIED' : 'DRAFT',
-          visibility: productPublishDirectly ? 'PUBLIC' : productVisibility
+      const payload = {
+        name: productName,
+        kind: productKind,
+        description,
+        coreValueTag: productCoreValueTag,
+        startedAt: startedAt ? new Date(startedAt).toISOString() : null,
+        status: 'VERIFIED',
+        visibility: 'PUBLIC'
+      }
+
+      if (editingProductId) {
+        await api(`/orgs/${org}/products/${editingProductId}`, {
+          method: 'PUT',
+          body: JSON.stringify(payload)
         })
-      })
-      setProductName('')
-      setDescription('')
-      setShowProductModal(false)
-      setNotification(productPublishDirectly ? 'Đã thêm và xuất bản sản phẩm di sản lên Culture Atlas!' : 'Đã lưu sản phẩm vào danh sách nội bộ.')
+        setNotification(`Đã cập nhật sản phẩm "${productName}" và đồng bộ lên Culture Atlas!`)
+      } else {
+        await api(`/orgs/${org}/products`, {
+          method: 'POST',
+          body: JSON.stringify(payload)
+        })
+        setNotification(`Đã thêm và đăng sản phẩm "${productName}" lên Culture Atlas thành công!`)
+      }
+
+      resetProductForm()
       setTimeout(() => setNotification(''), 4000)
       await load()
     } catch (err) {
-      alert(`Lỗi tạo sản phẩm: ${err}`)
+      alert(`Lỗi lưu sản phẩm: ${err}`)
     } finally {
       setBusy('')
     }
@@ -216,11 +274,11 @@ export default function PeopleProducts() {
         </div>
         <div className="hub-header-actions">
           {activeTab === 'people' ? (
-            <button className="btn-primary" onClick={() => setShowPersonModal(!showPersonModal)}>
+            <button className="btn-primary" onClick={() => { if (showPersonModal) resetPersonForm(); else setShowPersonModal(true); }}>
               {showPersonModal ? 'Đóng form' : 'Thêm Đại sứ Văn hóa'}
             </button>
           ) : (
-            <button className="btn-primary" onClick={() => setShowProductModal(!showProductModal)}>
+            <button className="btn-primary" onClick={() => { if (showProductModal) resetProductForm(); else setShowProductModal(true); }}>
               {showProductModal ? 'Đóng form' : 'Thêm Sản phẩm Di sản'}
             </button>
           )}
@@ -253,10 +311,10 @@ export default function PeopleProducts() {
       {activeTab === 'people' && (
         <>
           {showPersonModal && (
-            <form className="hub-panel form-panel" onSubmit={handleAddPerson}>
+            <form className="hub-panel form-panel" onSubmit={handleSavePerson}>
               <div className="panel-header">
-                <h3>Thêm Đại sứ Văn hóa / Lãnh đạo Mới</h3>
-                <span className="muted">Hỗ trợ xuất bản trực tiếp lên Culture Atlas People</span>
+                <h3>{editingPersonId ? 'Chỉnh sửa Hồ sơ Đại sứ' : 'Thêm Đại sứ Văn hóa / Lãnh đạo Mới'}</h3>
+                <span className="muted">{editingPersonId ? 'Tự động đồng bộ ngay lên Culture Atlas' : 'Tự động xuất bản trực tiếp lên Culture Atlas People'}</span>
               </div>
               <div className="form-grid">
                 <div className="form-field">
@@ -277,7 +335,7 @@ export default function PeopleProducts() {
                   />
                 </div>
                 <div className="form-field">
-                  <label>Giá trị cốt lõi đại diện (DNA Tag)</label>
+                  <label>Giá trị cốt lõi đại diện</label>
                   <select value={personCoreValueTag} onChange={e => setPersonCoreValueTag(e.target.value)}>
                     {CORE_VALUES.map(cv => (
                       <option key={cv.value} value={cv.value}>
@@ -293,24 +351,6 @@ export default function PeopleProducts() {
                     value={joinedAt}
                     onChange={e => setJoinedAt(e.target.value)}
                   />
-                </div>
-                <div className="form-field">
-                  <label>Phạm vi hiển thị</label>
-                  <select value={personVisibility} onChange={e => setPersonVisibility(e.target.value)}>
-                    <option value="PUBLIC">Công khai (PUBLIC — Hiển thị trên Atlas)</option>
-                    <option value="INTERNAL">Nội bộ (INTERNAL — Chỉ lưu trong Hub)</option>
-                  </select>
-                </div>
-                <div className="form-field full-width" style={{ marginTop: '0.25rem' }}>
-                  <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', fontWeight: 600, color: '#10b981' }}>
-                    <input
-                      type="checkbox"
-                      checked={personPublishDirectly}
-                      onChange={e => setPersonPublishDirectly(e.target.checked)}
-                      style={{ width: '18px', height: '18px', accentColor: '#10b981' }}
-                    />
-                    Xuất bản ngay lên Culture Atlas (Đánh dấu VERIFIED & PUBLIC để đồng bộ ngay)
-                  </label>
                 </div>
                 <div className="form-field full-width">
                   <label>Câu nói / Triết lý hành động tiêu biểu</label>
@@ -331,11 +371,11 @@ export default function PeopleProducts() {
                 </div>
               </div>
               <div className="form-actions">
-                <button type="button" className="btn-secondary" onClick={() => setShowPersonModal(false)}>
+                <button type="button" className="btn-secondary" onClick={resetPersonForm}>
                   Hủy
                 </button>
                 <button type="submit" className="btn-primary" disabled={busy === 'person'}>
-                  {busy === 'person' ? 'Đang lưu & Xuất bản…' : (personPublishDirectly ? 'Lưu & Xuất bản lên Atlas' : 'Lưu Hồ sơ')}
+                  {busy === 'person' ? 'Đang lưu & Xuất bản…' : (editingPersonId ? 'Lưu thay đổi & Cập nhật Atlas' : 'Lưu & Đăng lên Culture Atlas')}
                 </button>
               </div>
             </form>
@@ -385,53 +425,36 @@ export default function PeopleProducts() {
                             {p.coreValueTag}
                           </span>
                         )}
-                        <span className={`badge-status ${p.status.toLowerCase()}`}>
-                          {p.status}
-                        </span>
-                        <span className={`badge-vis ${p.visibility.toLowerCase()}`}>
-                          {p.visibility}
-                        </span>
                       </div>
 
                       <div className="person-card-footer">
-                        {p.isAtlasPublished ? (
-                          <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
-                            <span className="ready-atlas-pill">Đã lên Atlas</span>
-                            <button
-                              className="btn-action-small"
-                              disabled={busy === p.id}
-                              onClick={() => prepareAtlas('PERSON', p.id)}
-                              title="Đồng bộ cập nhật mới nhất lên Culture Atlas"
-                            >
-                              {busy === p.id ? 'Đang đồng bộ…' : 'Cập nhật Atlas'}
-                            </button>
-                            <a
-                              href="/#people"
-                              target="_blank"
-                              rel="noreferrer"
-                              style={{ fontSize: '0.8rem', color: '#10b981', textDecoration: 'none', fontWeight: 600 }}
-                            >
-                              Xem trên Atlas
-                            </a>
-                          </div>
-                        ) : (
+                        <div className="inline-actions" style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
                           <button
+                            type="button"
                             className="btn-action-small"
-                            disabled={busy === p.id}
-                            onClick={() => prepareAtlas('PERSON', p.id)}
-                            title="Chuyển sang VERIFIED + PUBLIC và xuất bản ngay lên Culture Atlas"
+                            onClick={() => startEditPerson(p)}
+                            title="Chỉnh sửa hồ sơ này"
                           >
-                            {busy === p.id ? 'Đang xử lý…' : 'Xuất bản lên Atlas'}
+                            Chỉnh sửa
                           </button>
-                        )}
-                        <button
-                          className="btn-delete-small"
-                          disabled={busy === p.id}
-                          onClick={() => handleDeletePerson(p.id, p.fullName)}
-                          title="Xóa hồ sơ này"
-                        >
-                          Xóa
-                        </button>
+                          <button
+                            type="button"
+                            className="btn-delete-small"
+                            disabled={busy === p.id}
+                            onClick={() => handleDeletePerson(p.id, p.fullName)}
+                            title="Xóa hồ sơ này"
+                          >
+                            Xóa
+                          </button>
+                          <a
+                            href="/#people"
+                            target="_blank"
+                            rel="noreferrer"
+                            style={{ fontSize: '0.8rem', color: '#10b981', textDecoration: 'none', fontWeight: 600, marginLeft: '4px' }}
+                          >
+                            Xem trên Atlas
+                          </a>
+                        </div>
                       </div>
                     </div>
                   )
@@ -446,10 +469,10 @@ export default function PeopleProducts() {
       {activeTab === 'products' && (
         <>
           {showProductModal && (
-            <form className="hub-panel form-panel" onSubmit={handleAddProduct}>
+            <form className="hub-panel form-panel" onSubmit={handleSaveProduct}>
               <div className="panel-header">
-                <h3>Thêm Sản phẩm / Dự án Di sản</h3>
-                <span className="muted">Hỗ trợ xuất bản trực tiếp lên Culture Atlas Products</span>
+                <h3>{editingProductId ? 'Chỉnh sửa Sản phẩm / Dự án Di sản' : 'Thêm Sản phẩm / Dự án Di sản'}</h3>
+                <span className="muted">{editingProductId ? 'Tự động đồng bộ ngay lên Culture Atlas' : 'Tự động xuất bản trực tiếp lên Culture Atlas Products'}</span>
               </div>
               <div className="form-grid">
                 <div className="form-field full-width">
@@ -472,7 +495,7 @@ export default function PeopleProducts() {
                   </select>
                 </div>
                 <div className="form-field">
-                  <label>Giá trị cốt lõi đại diện (DNA Tag)</label>
+                  <label>Giá trị cốt lõi đại diện</label>
                   <select value={productCoreValueTag} onChange={e => setProductCoreValueTag(e.target.value)}>
                     {CORE_VALUES.map(cv => (
                       <option key={cv.value} value={cv.value}>
@@ -481,31 +504,13 @@ export default function PeopleProducts() {
                     ))}
                   </select>
                 </div>
-                <div className="form-field">
+                <div className="form-field full-width">
                   <label>Thời điểm bắt đầu</label>
                   <input
                     type="date"
                     value={startedAt}
                     onChange={e => setStartedAt(e.target.value)}
                   />
-                </div>
-                <div className="form-field">
-                  <label>Phạm vi hiển thị</label>
-                  <select value={productVisibility} onChange={e => setProductVisibility(e.target.value)}>
-                    <option value="PUBLIC">Công khai (PUBLIC — Hiển thị trên Atlas)</option>
-                    <option value="INTERNAL">Nội bộ (INTERNAL — Chỉ lưu trong Hub)</option>
-                  </select>
-                </div>
-                <div className="form-field full-width" style={{ marginTop: '0.25rem' }}>
-                  <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', fontWeight: 600, color: '#10b981' }}>
-                    <input
-                      type="checkbox"
-                      checked={productPublishDirectly}
-                      onChange={e => setProductPublishDirectly(e.target.checked)}
-                      style={{ width: '18px', height: '18px', accentColor: '#10b981' }}
-                    />
-                    Xuất bản ngay lên Culture Atlas (Đánh dấu VERIFIED & PUBLIC để đồng bộ ngay)
-                  </label>
                 </div>
                 <div className="form-field full-width">
                   <label>Mô tả sản phẩm & ý nghĩa văn hóa</label>
@@ -518,11 +523,11 @@ export default function PeopleProducts() {
                 </div>
               </div>
               <div className="form-actions">
-                <button type="button" className="btn-secondary" onClick={() => setShowProductModal(false)}>
+                <button type="button" className="btn-secondary" onClick={resetProductForm}>
                   Hủy
                 </button>
                 <button type="submit" className="btn-primary" disabled={busy === 'product'}>
-                  {busy === 'product' ? 'Đang lưu & Xuất bản…' : (productPublishDirectly ? 'Lưu & Xuất bản lên Atlas' : 'Lưu Sản phẩm Di sản')}
+                  {busy === 'product' ? 'Đang lưu & Xuất bản…' : (editingProductId ? 'Lưu thay đổi & Cập nhật Atlas' : 'Lưu & Đăng lên Culture Atlas')}
                 </button>
               </div>
             </form>
@@ -558,12 +563,6 @@ export default function PeopleProducts() {
                               {pr.coreValueTag}
                             </span>
                           )}
-                          <span className={`badge-status ${pr.status.toLowerCase()}`}>
-                            {pr.status}
-                          </span>
-                          <span className={`badge-vis ${pr.visibility.toLowerCase()}`}>
-                            {pr.visibility}
-                          </span>
                         </div>
                       </div>
 
@@ -575,37 +574,16 @@ export default function PeopleProducts() {
                           {pr.startedAt ? `Bắt đầu: ${new Date(pr.startedAt).toLocaleDateString('vi-VN')}` : ''}
                         </span>
                         <div className="inline-actions" style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
-                          {pr.isAtlasPublished ? (
-                            <>
-                              <span className="ready-atlas-pill">Đã lên Atlas</span>
-                              <button
-                                className="btn-action-small"
-                                disabled={busy === pr.id}
-                                onClick={() => prepareAtlas('PRODUCT', pr.id)}
-                                title="Đồng bộ cập nhật mới nhất lên Culture Atlas"
-                              >
-                                {busy === pr.id ? 'Đang đồng bộ…' : 'Cập nhật Atlas'}
-                              </button>
-                              <a
-                                href="/#products"
-                                target="_blank"
-                                rel="noreferrer"
-                                style={{ fontSize: '0.8rem', color: '#10b981', textDecoration: 'none', fontWeight: 600 }}
-                              >
-                                Xem trên Atlas
-                              </a>
-                            </>
-                          ) : (
-                            <button
-                              className="btn-action-small"
-                              disabled={busy === pr.id}
-                              onClick={() => prepareAtlas('PRODUCT', pr.id)}
-                              title="Chuyển sang VERIFIED + PUBLIC và xuất bản ngay lên Culture Atlas"
-                            >
-                              {busy === pr.id ? 'Đang xử lý…' : 'Xuất bản lên Atlas'}
-                            </button>
-                          )}
                           <button
+                            type="button"
+                            className="btn-action-small"
+                            onClick={() => startEditProduct(pr)}
+                            title="Chỉnh sửa sản phẩm này"
+                          >
+                            Chỉnh sửa
+                          </button>
+                          <button
+                            type="button"
                             className="btn-delete-small"
                             disabled={busy === pr.id}
                             onClick={() => handleDeleteProduct(pr.id, pr.name)}
@@ -613,6 +591,14 @@ export default function PeopleProducts() {
                           >
                             Xóa
                           </button>
+                          <a
+                            href="/#products"
+                            target="_blank"
+                            rel="noreferrer"
+                            style={{ fontSize: '0.8rem', color: '#10b981', textDecoration: 'none', fontWeight: 600, marginLeft: '4px' }}
+                          >
+                            Xem trên Atlas
+                          </a>
                         </div>
                       </div>
                     </div>

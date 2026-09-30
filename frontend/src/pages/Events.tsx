@@ -35,6 +35,7 @@ export default function Events() {
   const [items, setItems] = useState<EventItem[]>([])
   const [loading, setLoading] = useState(true)
   const [showAddModal, setShowAddModal] = useState(false)
+  const [editingId, setEditingId] = useState<string | null>(null)
   const [busy, setBusy] = useState<string>('')
   const [notification, setNotification] = useState<string>('')
 
@@ -43,8 +44,6 @@ export default function Events() {
   const [eventType, setEventType] = useState('TECH_MILESTONE')
   const [coreValueTag, setCoreValueTag] = useState('Trust')
   const [startDate, setStartDate] = useState(new Date().toISOString().slice(0, 10))
-  const [visibility, setVisibility] = useState('PUBLIC')
-  const [publishDirectly, setPublishDirectly] = useState(true)
   const [content, setContent] = useState('')
 
   const org = currentOrg()
@@ -65,34 +64,64 @@ export default function Events() {
     load()
   }, [org])
 
-  async function handleAdd(e: FormEvent) {
+  function resetForm() {
+    setName('')
+    setContent('')
+    setEditingId(null)
+    setEventType('TECH_MILESTONE')
+    setCoreValueTag('Trust')
+    setStartDate(new Date().toISOString().slice(0, 10))
+    setShowAddModal(false)
+  }
+
+  function startEdit(ev: EventItem) {
+    setEditingId(ev.id)
+    setName(ev.name)
+    setEventType(ev.eventType || 'TECH_MILESTONE')
+    setCoreValueTag(ev.coreValueTag || 'Trust')
+    setContent(ev.content || '')
+    setStartDate(ev.startDate ? ev.startDate.slice(0, 10) : new Date().toISOString().slice(0, 10))
+    setShowAddModal(true)
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+  }
+
+  async function handleSave(e: FormEvent) {
     e.preventDefault()
     if (!name.trim() || !content.trim()) {
       alert('Vui lòng nhập Tên sự kiện và Nội dung.')
       return
     }
-    setBusy('creating')
+    setBusy('saving')
     try {
-      await api(`/orgs/${org}/events`, {
-        method: 'POST',
-        body: JSON.stringify({
-          name,
-          eventType,
-          startDate: startDate ? new Date(startDate).toISOString() : new Date().toISOString(),
-          content,
-          coreValueTag,
-          status: publishDirectly ? 'VERIFIED' : 'DRAFT',
-          visibility: publishDirectly ? 'PUBLIC' : visibility
+      const payload = {
+        name,
+        eventType,
+        startDate: startDate ? new Date(startDate).toISOString() : new Date().toISOString(),
+        content,
+        coreValueTag,
+        status: 'VERIFIED',
+        visibility: 'PUBLIC'
+      }
+
+      if (editingId) {
+        await api(`/orgs/${org}/events/${editingId}`, {
+          method: 'PUT',
+          body: JSON.stringify(payload)
         })
-      })
-      setName('')
-      setContent('')
-      setShowAddModal(false)
-      setNotification(publishDirectly ? 'Đã ghi nhận và xuất bản trực tiếp sự kiện lên Culture Atlas!' : 'Đã lưu sự kiện vào danh sách nội bộ.')
+        setNotification(`Đã cập nhật sự kiện "${name}" và đồng bộ lên Culture Atlas!`)
+      } else {
+        await api(`/orgs/${org}/events`, {
+          method: 'POST',
+          body: JSON.stringify(payload)
+        })
+        setNotification(`Đã ghi nhận và đăng sự kiện "${name}" lên Culture Atlas thành công!`)
+      }
+
+      resetForm()
       setTimeout(() => setNotification(''), 4000)
       await load()
     } catch (err) {
-      alert(`Lỗi tạo sự kiện: ${err}`)
+      alert(`Lỗi lưu sự kiện: ${err}`)
     } finally {
       setBusy('')
     }
@@ -147,7 +176,7 @@ export default function Events() {
           </p>
         </div>
         <div className="hub-header-actions">
-          <button className="btn-primary" onClick={() => setShowAddModal(!showAddModal)}>
+          <button className="btn-primary" onClick={() => { if (showAddModal) resetForm(); else setShowAddModal(true); }}>
             {showAddModal ? 'Đóng form' : 'Ghi nhận sự kiện mới'}
           </button>
         </div>
@@ -160,10 +189,10 @@ export default function Events() {
       )}
 
       {showAddModal && (
-        <form className="hub-panel form-panel" onSubmit={handleAdd}>
+        <form className="hub-panel form-panel" onSubmit={handleSave}>
           <div className="panel-header">
-            <h3>Ghi nhận Cột mốc / Sự kiện Mới</h3>
-            <span className="muted">Hỗ trợ xuất bản trực tiếp lên Culture Atlas Timeline</span>
+            <h3>{editingId ? 'Chỉnh sửa Cột mốc Văn hóa' : 'Ghi nhận Cột mốc Lịch sử'}</h3>
+            <span className="muted">{editingId ? 'Tự động đồng bộ ngay lên Culture Atlas' : 'Tự động xuất bản trực tiếp lên Culture Atlas Timeline'}</span>
           </div>
 
           <div className="form-grid">
@@ -189,7 +218,7 @@ export default function Events() {
             </div>
 
             <div className="form-field">
-              <label>Giá trị cốt lõi (DNA Tag)</label>
+              <label>Giá trị cốt lõi</label>
               <select value={coreValueTag} onChange={e => setCoreValueTag(e.target.value)}>
                 {CORE_VALUES.map(cv => (
                   <option key={cv.value} value={cv.value}>
@@ -199,7 +228,7 @@ export default function Events() {
               </select>
             </div>
 
-            <div className="form-field">
+            <div className="form-field full-width">
               <label>Ngày diễn ra *</label>
               <input
                 type="date"
@@ -207,26 +236,6 @@ export default function Events() {
                 value={startDate}
                 onChange={e => setStartDate(e.target.value)}
               />
-            </div>
-
-            <div className="form-field">
-              <label>Phạm vi hiển thị</label>
-              <select value={visibility} onChange={e => setVisibility(e.target.value)}>
-                <option value="PUBLIC">Công khai (PUBLIC — Cho phép xuất hiện trên Atlas)</option>
-                <option value="INTERNAL">Nội bộ (INTERNAL — Chỉ lưu hành trong Hub)</option>
-              </select>
-            </div>
-
-            <div className="form-field full-width" style={{ marginTop: '0.25rem' }}>
-              <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', fontWeight: 600, color: '#10b981' }}>
-                <input
-                  type="checkbox"
-                  checked={publishDirectly}
-                  onChange={e => setPublishDirectly(e.target.checked)}
-                  style={{ width: '18px', height: '18px', accentColor: '#10b981' }}
-                />
-                Xuất bản ngay lên Culture Atlas (Đánh dấu VERIFIED & PUBLIC để đồng bộ ngay)
-              </label>
             </div>
 
             <div className="form-field full-width">
@@ -242,11 +251,11 @@ export default function Events() {
           </div>
 
           <div className="form-actions">
-            <button type="button" className="btn-secondary" onClick={() => setShowAddModal(false)}>
+            <button type="button" className="btn-secondary" onClick={resetForm}>
               Hủy
             </button>
-            <button type="submit" className="btn-primary" disabled={busy === 'creating'}>
-              {busy === 'creating' ? 'Đang lưu & Xuất bản…' : (publishDirectly ? 'Lưu & Xuất bản lên Atlas' : 'Lưu Sự kiện')}
+            <button type="submit" className="btn-primary" disabled={busy === 'saving'}>
+              {busy === 'saving' ? 'Đang lưu & Xuất bản…' : (editingId ? 'Lưu thay đổi & Cập nhật Atlas' : 'Lưu & Đăng lên Culture Atlas')}
             </button>
           </div>
         </form>
@@ -294,12 +303,6 @@ export default function Events() {
                           {ev.coreValueTag}
                         </span>
                       )}
-                      <span className={`badge-status ${ev.status.toLowerCase()}`}>
-                        {ev.status}
-                      </span>
-                      <span className={`badge-vis ${ev.visibility.toLowerCase()}`}>
-                        {ev.visibility}
-                      </span>
                     </div>
 
                     <h4 className="event-title">{ev.name}</h4>
@@ -310,37 +313,16 @@ export default function Events() {
                         Cập nhật: {new Date(ev.updatedAt).toLocaleDateString('vi-VN')}
                       </span>
                       <div className="inline-actions">
-                        {ev.isAtlasPublished ? (
-                          <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
-                            <span className="ready-atlas-pill">Đã xuất bản lên Atlas</span>
-                            <button
-                              className="btn-action-small"
-                              disabled={busy === ev.id}
-                              onClick={() => prepareAtlas(ev.id)}
-                              title="Đồng bộ cập nhật mới nhất lên Culture Atlas"
-                            >
-                              {busy === ev.id ? 'Đang đồng bộ…' : 'Cập nhật Atlas'}
-                            </button>
-                            <a
-                              href="/#timeline"
-                              target="_blank"
-                              rel="noreferrer"
-                              style={{ fontSize: '0.8rem', color: '#10b981', textDecoration: 'none', fontWeight: 600 }}
-                            >
-                              Xem trên Atlas
-                            </a>
-                          </div>
-                        ) : (
-                          <button
-                            className="btn-action-small"
-                            disabled={busy === ev.id}
-                            onClick={() => prepareAtlas(ev.id)}
-                            title="Chuyển sang VERIFIED + PUBLIC và xuất bản ngay lên Culture Atlas"
-                          >
-                            {busy === ev.id ? 'Đang xử lý…' : 'Xuất bản lên Atlas'}
-                          </button>
-                        )}
                         <button
+                          type="button"
+                          className="btn-action-small"
+                          onClick={() => startEdit(ev)}
+                          title="Chỉnh sửa sự kiện này"
+                        >
+                          Chỉnh sửa
+                        </button>
+                        <button
+                          type="button"
                           className="btn-delete-small"
                           disabled={busy === ev.id}
                           onClick={() => handleDelete(ev.id, ev.name)}
@@ -348,6 +330,14 @@ export default function Events() {
                         >
                           Xóa
                         </button>
+                        <a
+                          href="/#timeline"
+                          target="_blank"
+                          rel="noreferrer"
+                          style={{ fontSize: '0.8rem', color: '#10b981', textDecoration: 'none', fontWeight: 600, marginLeft: '4px' }}
+                        >
+                          Xem trên Atlas
+                        </a>
                       </div>
                     </div>
                   </div>

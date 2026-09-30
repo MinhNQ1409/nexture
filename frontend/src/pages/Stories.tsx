@@ -34,6 +34,7 @@ export default function Stories() {
   const [items, setItems] = useState<StoryItem[]>([])
   const [loading, setLoading] = useState(true)
   const [showAddModal, setShowAddModal] = useState(false)
+  const [editingId, setEditingId] = useState<string | null>(null)
   const [busy, setBusy] = useState<string>('')
   const [notification, setNotification] = useState<string>('')
 
@@ -44,8 +45,6 @@ export default function Stories() {
   const [summary, setSummary] = useState('')
   const [content, setContent] = useState('')
   const [occurredAt, setOccurredAt] = useState(new Date().toISOString().slice(0, 10))
-  const [visibility, setVisibility] = useState('PUBLIC')
-  const [publishDirectly, setPublishDirectly] = useState(true)
 
   const org = currentOrg()
 
@@ -65,36 +64,67 @@ export default function Stories() {
     load()
   }, [org])
 
-  async function handleAdd(e: FormEvent) {
+  function resetForm() {
+    setTitle('')
+    setSummary('')
+    setContent('')
+    setEditingId(null)
+    setStoryType('CULTURE_STORY')
+    setCoreValueTag('Trust')
+    setOccurredAt(new Date().toISOString().slice(0, 10))
+    setShowAddModal(false)
+  }
+
+  function startEdit(s: StoryItem) {
+    setEditingId(s.id)
+    setTitle(s.title)
+    setStoryType(s.storyType || 'CULTURE_STORY')
+    setCoreValueTag(s.coreValueTag || 'Trust')
+    setSummary(s.summary || '')
+    setContent(s.content || '')
+    setOccurredAt(s.occurredAt ? s.occurredAt.slice(0, 10) : new Date().toISOString().slice(0, 10))
+    setShowAddModal(true)
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+  }
+
+  async function handleSave(e: FormEvent) {
     e.preventDefault()
     if (!title.trim() || !content.trim()) {
       alert('Vui lòng nhập Tiêu đề và Nội dung câu chuyện.')
       return
     }
-    setBusy('creating')
+    setBusy('saving')
     try {
-      await api(`/orgs/${org}/stories`, {
-        method: 'POST',
-        body: JSON.stringify({
-          title,
-          storyType,
-          summary,
-          content,
-          coreValueTag,
-          occurredAt: occurredAt ? new Date(occurredAt).toISOString() : null,
-          status: publishDirectly ? 'VERIFIED' : 'DRAFT',
-          visibility: publishDirectly ? 'PUBLIC' : visibility
+      const payload = {
+        title,
+        storyType,
+        summary,
+        content,
+        coreValueTag,
+        occurredAt: occurredAt ? new Date(occurredAt).toISOString() : null,
+        status: 'VERIFIED',
+        visibility: 'PUBLIC'
+      }
+
+      if (editingId) {
+        await api(`/orgs/${org}/stories/${editingId}`, {
+          method: 'PUT',
+          body: JSON.stringify(payload)
         })
-      })
-      setTitle('')
-      setSummary('')
-      setContent('')
-      setShowAddModal(false)
-      setNotification(publishDirectly ? 'Đã tạo và xuất bản trực tiếp câu chuyện lên Culture Atlas!' : 'Đã lưu câu chuyện vào Thư viện Story.')
+        setNotification(`Đã cập nhật câu chuyện "${title}" và đồng bộ lên Culture Atlas!`)
+      } else {
+        await api(`/orgs/${org}/stories`, {
+          method: 'POST',
+          body: JSON.stringify(payload)
+        })
+        setNotification(`Đã tạo và đăng câu chuyện "${title}" lên Culture Atlas thành công!`)
+      }
+
+      resetForm()
       setTimeout(() => setNotification(''), 4000)
       await load()
     } catch (err) {
-      alert(`Lỗi tạo câu chuyện: ${err}`)
+      alert(`Lỗi lưu câu chuyện: ${err}`)
     } finally {
       setBusy('')
     }
@@ -149,7 +179,7 @@ export default function Stories() {
           </p>
         </div>
         <div className="hub-header-actions">
-          <button className="btn-primary" onClick={() => setShowAddModal(!showAddModal)}>
+          <button className="btn-primary" onClick={() => { if (showAddModal) resetForm(); else setShowAddModal(true); }}>
             {showAddModal ? 'Đóng form' : 'Viết câu chuyện mới'}
           </button>
         </div>
@@ -161,12 +191,12 @@ export default function Stories() {
         </div>
       )}
 
-      {/* Add Story Form Modal/Panel */}
+      {/* Add / Edit Story Form Modal/Panel */}
       {showAddModal && (
-        <form className="hub-panel form-panel" onSubmit={handleAdd}>
+        <form className="hub-panel form-panel" onSubmit={handleSave}>
           <div className="panel-header">
-            <h3>Tạo Câu chuyện Văn hóa Mới</h3>
-            <span className="muted">Hỗ trợ xuất bản trực tiếp lên Culture Atlas Stories</span>
+            <h3>{editingId ? 'Chỉnh sửa Câu chuyện Văn hóa' : 'Tạo Câu chuyện Văn hóa Mới'}</h3>
+            <span className="muted">{editingId ? 'Tự động đồng bộ ngay lên Culture Atlas' : 'Tự động xuất bản trực tiếp lên Culture Atlas Stories'}</span>
           </div>
 
           <div className="form-grid">
@@ -192,7 +222,7 @@ export default function Stories() {
             </div>
 
             <div className="form-field">
-              <label>Giá trị cốt lõi (DNA Tag)</label>
+              <label>Giá trị cốt lõi</label>
               <select value={coreValueTag} onChange={e => setCoreValueTag(e.target.value)}>
                 {CORE_VALUES.map(cv => (
                   <option key={cv.value} value={cv.value}>
@@ -202,33 +232,13 @@ export default function Stories() {
               </select>
             </div>
 
-            <div className="form-field">
+            <div className="form-field full-width">
               <label>Thời điểm diễn ra</label>
               <input
                 type="date"
                 value={occurredAt}
                 onChange={e => setOccurredAt(e.target.value)}
               />
-            </div>
-
-            <div className="form-field">
-              <label>Phạm vi hiển thị</label>
-              <select value={visibility} onChange={e => setVisibility(e.target.value)}>
-                <option value="PUBLIC">Công khai (PUBLIC — Cho phép xuất hiện trên Atlas)</option>
-                <option value="INTERNAL">Nội bộ (INTERNAL — Chỉ lưu hành trong Hub)</option>
-              </select>
-            </div>
-
-            <div className="form-field full-width" style={{ marginTop: '0.25rem' }}>
-              <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', fontWeight: 600, color: '#10b981' }}>
-                <input
-                  type="checkbox"
-                  checked={publishDirectly}
-                  onChange={e => setPublishDirectly(e.target.checked)}
-                  style={{ width: '18px', height: '18px', accentColor: '#10b981' }}
-                />
-                Xuất bản ngay lên Culture Atlas (Đánh dấu VERIFIED & PUBLIC để đồng bộ ngay)
-              </label>
             </div>
 
             <div className="form-field full-width">
@@ -253,11 +263,11 @@ export default function Stories() {
           </div>
 
           <div className="form-actions">
-            <button type="button" className="btn-secondary" onClick={() => setShowAddModal(false)}>
+            <button type="button" className="btn-secondary" onClick={resetForm}>
               Hủy
             </button>
-            <button type="submit" className="btn-primary" disabled={busy === 'creating'}>
-              {busy === 'creating' ? 'Đang lưu & Xuất bản…' : (publishDirectly ? 'Lưu & Xuất bản lên Atlas' : 'Lưu vào Thư viện Story')}
+            <button type="submit" className="btn-primary" disabled={busy === 'saving'}>
+              {busy === 'saving' ? 'Đang lưu & Xuất bản…' : (editingId ? 'Lưu thay đổi & Cập nhật Atlas' : 'Lưu & Đăng lên Culture Atlas')}
             </button>
           </div>
         </form>
@@ -314,37 +324,16 @@ export default function Stories() {
                       Cập nhật: {new Date(s.updatedAt).toLocaleDateString('vi-VN')}
                     </span>
                     <div className="inline-actions">
-                      {s.isAtlasPublished ? (
-                        <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
-                          <span className="ready-atlas-pill">Đã xuất bản lên Atlas</span>
-                          <button
-                            className="btn-action-small"
-                            disabled={busy === s.id}
-                            onClick={() => prepareAtlas(s.id)}
-                            title="Đồng bộ cập nhật mới nhất lên Culture Atlas"
-                          >
-                            {busy === s.id ? 'Đang đồng bộ…' : 'Cập nhật Atlas'}
-                          </button>
-                          <a
-                            href="/#stories"
-                            target="_blank"
-                            rel="noreferrer"
-                            style={{ fontSize: '0.8rem', color: '#10b981', textDecoration: 'none', fontWeight: 600 }}
-                          >
-                            Xem trên Atlas
-                          </a>
-                        </div>
-                      ) : (
-                        <button
-                          className="btn-action-small"
-                          disabled={busy === s.id}
-                          onClick={() => prepareAtlas(s.id)}
-                          title="Chuyển sang VERIFIED + PUBLIC và xuất bản ngay lên Culture Atlas"
-                        >
-                          {busy === s.id ? 'Đang xử lý…' : 'Xuất bản lên Atlas'}
-                        </button>
-                      )}
                       <button
+                        type="button"
+                        className="btn-action-small"
+                        onClick={() => startEdit(s)}
+                        title="Chỉnh sửa câu chuyện này"
+                      >
+                        Chỉnh sửa
+                      </button>
+                      <button
+                        type="button"
                         className="btn-delete-small"
                         disabled={busy === s.id}
                         onClick={() => handleDelete(s.id, s.title)}
@@ -352,6 +341,14 @@ export default function Stories() {
                       >
                         Xóa
                       </button>
+                      <a
+                        href="/#stories"
+                        target="_blank"
+                        rel="noreferrer"
+                        style={{ fontSize: '0.8rem', color: '#10b981', textDecoration: 'none', fontWeight: 600, marginLeft: '4px' }}
+                      >
+                        Xem trên Atlas
+                      </a>
                     </div>
                   </div>
                 </div>
