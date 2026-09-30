@@ -281,42 +281,6 @@ export default function AtlasManagement() {
           </table>
         </div>
       </div>
-
-      {/* Snapshots Log */}
-      <div className="hub-panel">
-        <div className="panel-header">
-          <h3>Các Bản chụp Ấn phẩm Độc lập (Publication Snapshots)</h3>
-          <span className="muted">{data.publications.length} snapshot đã tạo</span>
-        </div>
-        {data.publications.length === 0 ? (
-          <p className="empty-card">Chưa có snapshot nào được tạo.</p>
-        ) : (
-          <div className="snapshots-list">
-            {data.publications.map(p => (
-              <div className="snapshot-item-row" key={p.id}>
-                <div className="snapshot-item-left">
-                  <span className="version-badge">v{p.version}</span>
-                  <div>
-                    <b>{p.publishedTitle}</b>
-                    <small className="muted">
-                      {p.entityType} · slug: <code>{p.slug}</code>
-                      {p.publishedAt ? ` · Xuất bản: ${new Date(p.publishedAt).toLocaleDateString('vi-VN')}` : ''}
-                    </small>
-                  </div>
-                </div>
-                <div className="snapshot-item-right">
-                  {p.isOutdated ? (
-                    <span className="badge-outdated">OUTDATED</span>
-                  ) : (
-                    <span className="badge-up-to-date">Đồng bộ</span>
-                  )}
-                  <span className={`badge-status ${p.status.toLowerCase()}`}>{p.status}</span>
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
-      </div>
     </div>
   )
 }
