@@ -1,0 +1,30 @@
+# Build & Binary outputs
+**/bin/
+**/obj/
+**/dist/
+**/node_modules/
+*.tsbuildinfo
+**/.vs/
+**/.vscode/
+**/.idea/
+
+# Environment and secrets
+**/.env
+**/.env.*
+!**/.env.example
+
+# Temporary archives and template zips
+*.zip
+*.tar.gz
+*.log
+frontend.zip
+nexture-sparkle-main/
+
+# Backend uploads & data
+backend/Nexture.Api/uploads/*
+!backend/Nexture.Api/uploads/.gitkeep
+
+# OS specific
+.DS_Store
+Thumbs.db
+desktop.ini
