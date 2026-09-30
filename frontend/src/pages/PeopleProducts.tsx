@@ -382,7 +382,7 @@ export default function PeopleProducts() {
                               borderColor: cv?.border || '#a7f3d0'
                             }}
                           >
-                            DNA: {p.coreValueTag}
+                            {p.coreValueTag}
                           </span>
                         )}
                         <span className={`badge-status ${p.status.toLowerCase()}`}>
@@ -555,7 +555,7 @@ export default function PeopleProducts() {
                                 borderColor: cv?.border || '#a7f3d0'
                               }}
                             >
-                              DNA: {pr.coreValueTag}
+                              {pr.coreValueTag}
                             </span>
                           )}
                           <span className={`badge-status ${pr.status.toLowerCase()}`}>

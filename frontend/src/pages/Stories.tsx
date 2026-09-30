@@ -294,15 +294,9 @@ export default function Stories() {
                             borderColor: cv?.border || '#a7f3d0'
                           }}
                         >
-                          DNA: {s.coreValueTag}
+                          {s.coreValueTag}
                         </span>
                       )}
-                      <span className={`badge-status ${s.status.toLowerCase()}`}>
-                        {s.status}
-                      </span>
-                      <span className={`badge-vis ${s.visibility.toLowerCase()}`}>
-                        {s.visibility}
-                      </span>
                     </div>
                     {s.occurredAt && (
                       <span className="card-date">

@@ -304,7 +304,7 @@ export default function PublicAtlasHome() {
         </div>
 
         <nav className="atlas-nav-links">
-          <a href="#manifesto">DNA Văn hóa</a>
+          <a href="#manifesto">Văn hóa</a>
           <a href="#values">Giá trị cốt lõi</a>
           <a href="#timeline">Dòng thời gian</a>
           <a href="#stories">Câu chuyện</a>
@@ -529,7 +529,6 @@ export default function PublicAtlasHome() {
                 Những ký ức lập nghiệp, bài học vượt qua khủng hoảng và triết lý sống động được bảo tồn vĩnh cửu.
               </p>
             </div>
-            <span className="count-pill-badge">{filteredStories.length} câu chuyện</span>
           </div>
 
           {filteredStories.length === 0 ? (
@@ -539,9 +538,8 @@ export default function PublicAtlasHome() {
               {filteredStories.map(s => (
                 <article className="atlas-story-card" key={s.id}>
                   <div className="story-card-top">
-                    <span className="story-pill-type">STORY · v{s.version}</span>
                     {s.coreValueTag && (
-                      <span className="cv-relation-badge">DNA: {s.coreValueTag}</span>
+                      <span className="cv-relation-badge">{s.coreValueTag}</span>
                     )}
                   </div>
                   <h3 className="atlas-story-title">{s.title}</h3>
@@ -554,7 +552,7 @@ export default function PublicAtlasHome() {
                       className="btn-read-story"
                       onClick={() => setActiveStory(s)}
                     >
-                      Đọc câu chuyện đầy đủ →
+                      Đọc câu chuyện đầy đủ
                     </button>
                   </div>
                 </article>
@@ -573,7 +571,6 @@ export default function PublicAtlasHome() {
                 Những gương mặt tiêu biểu thực hành giá trị văn hóa và truyền cảm hứng cho toàn thể tổ chức.
               </p>
             </div>
-            <span className="count-pill-badge">{filteredPeople.length} đại sứ</span>
           </div>
 
           {filteredPeople.length === 0 ? (
@@ -657,9 +654,8 @@ export default function PublicAtlasHome() {
           <div className="story-reader-modal" onClick={e => e.stopPropagation()}>
             <div className="reader-modal-header">
               <div className="reader-meta">
-                <span className="reader-pill">STORY · v{activeStory.version}</span>
                 {activeStory.coreValueTag && (
-                  <span className="cv-relation-badge">DNA: {activeStory.coreValueTag}</span>
+                  <span className="cv-relation-badge">{activeStory.coreValueTag}</span>
                 )}
                 {activeStory.occurredAt && (
                   <span className="reader-date">
@@ -672,7 +668,7 @@ export default function PublicAtlasHome() {
                 className="btn-close-reader"
                 onClick={() => setActiveStory(null)}
               >
-                ✕
+                Đóng
               </button>
             </div>
 

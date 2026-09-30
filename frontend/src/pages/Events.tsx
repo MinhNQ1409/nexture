@@ -291,7 +291,7 @@ export default function Events() {
                             borderColor: cv?.border || '#a7f3d0'
                           }}
                         >
-                          DNA: {ev.coreValueTag}
+                          {ev.coreValueTag}
                         </span>
                       )}
                       <span className={`badge-status ${ev.status.toLowerCase()}`}>
