@@ -136,24 +136,22 @@ export default function AtlasManagement() {
         <div className="hub-header-actions">
           <a className="btn-atlas-preview" href="/atlas" target="_blank" rel="noreferrer">
             <span>Mở NexTure Culture Atlas</span>
-            <span>↗</span>
           </a>
         </div>
       </div>
 
       {notification && (
         <div className="hub-notification-box">
-          <span>✓ {notification}</span>
+          <span>{notification}</span>
         </div>
       )}
 
-      {error && <div className="hub-error-box">✕ {error}</div>}
+      {error && <div className="hub-error-box">{error}</div>}
 
       {/* KPI Ribbon */}
       <div className="hub-kpi-grid">
         <div className="hub-kpi-card color-slate">
           <div className="kpi-top">
-            <span className="kpi-icon">📋</span>
             <span className="kpi-count">{totalCandidates}</span>
           </div>
           <div className="kpi-title">Tổng thực thể Hub</div>
@@ -162,7 +160,6 @@ export default function AtlasManagement() {
 
         <div className="hub-kpi-card color-teal">
           <div className="kpi-top">
-            <span className="kpi-icon">✨</span>
             <span className="kpi-count">{eligibleCount}</span>
           </div>
           <div className="kpi-title">Đủ điều kiện xuất bản</div>
@@ -171,7 +168,6 @@ export default function AtlasManagement() {
 
         <div className="hub-kpi-card color-green">
           <div className="kpi-top">
-            <span className="kpi-icon">🌐</span>
             <span className="kpi-count">{totalPublished}</span>
           </div>
           <div className="kpi-title">Đang công khai trên Atlas</div>
@@ -180,7 +176,6 @@ export default function AtlasManagement() {
 
         <div className={`hub-kpi-card color-${totalOutdated > 0 ? 'amber' : 'gray'}`}>
           <div className="kpi-top">
-            <span className="kpi-icon">⚠️</span>
             <span className="kpi-count">{totalOutdated}</span>
           </div>
           <div className="kpi-title">Cần cập nhật Snapshot</div>

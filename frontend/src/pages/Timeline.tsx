@@ -42,7 +42,7 @@ export default function Timeline() {
         </div>
         <div className="hub-header-actions">
           <Link to="/events" className="btn-secondary">
-            Quản lý Sự kiện →
+            Quản lý Sự kiện
           </Link>
         </div>
       </div>
@@ -69,7 +69,7 @@ export default function Timeline() {
                     <div className="badges-group">
                       <span className="badge-type">{ev.eventType}</span>
                       <span className={`badge-vis ${ev.visibility.toLowerCase()}`}>
-                        {ev.visibility === 'PUBLIC' ? '🌐 PUBLIC' : '🔒 INTERNAL'}
+                        {ev.visibility}
                       </span>
                     </div>
                     <time className="timeline-date-label">

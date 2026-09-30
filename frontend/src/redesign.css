@@ -27,16 +27,16 @@ html:root {
   --atlas-muted: #63746e;
   --atlas-border: #d8e3de;
   --atlas-accent: #153d35;
-  --font-sans: 'Figtree', sans-serif;
-  --font-serif: 'Outfit', sans-serif;
+  --font-sans: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-serif: 'Plus Jakarta Sans', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
   --nexture-ink: #153d35;
   --nexture-emerald: #10b981;
   --nexture-paper: #f6f8f7;
   --nexture-graphite: #1f2933;
 }
 html { scroll-behavior: smooth; }
-body { font-family: var(--font-sans); background: var(--nexture-paper); }
-h1,h2,h3,h4,.brand-title,.atlas-main-title,.kpi-count,.footer-heading { font-family: var(--font-serif); letter-spacing: 0; }
+body { font-family: var(--font-sans); background: var(--nexture-paper); -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
+h1,h2,h3,h4,.brand-title,.atlas-main-title,.kpi-count,.footer-heading { font-family: var(--font-serif); letter-spacing: -0.025em; font-weight: 700; }
 button, a, input, select, textarea { outline-offset: 3px; }
 :focus-visible { outline: 2px solid var(--nexture-emerald); }
 button { cursor: pointer; }

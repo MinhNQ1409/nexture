@@ -2,14 +2,14 @@ import { NavLink, Outlet, useNavigate } from 'react-router-dom'
 import { currentOrg, getSession } from '../api'
 
 const items = [
-  { to: '/hub', label: 'Tổng quan', icon: '📊' },
-  { to: '/library', label: 'Culture Library', icon: '📚' },
-  { to: '/stories', label: 'Culture Stories', icon: '✍️' },
-  { to: '/events', label: 'Culture Events', icon: '📅' },
-  { to: '/people-products', label: 'People & Products', icon: '👥' },
-  { to: '/reviews', label: 'Pending Review', icon: '🔍' },
-  { to: '/timeline', label: 'Culture Timeline', icon: '⏳' },
-  { to: '/atlas-management', label: 'Culture Atlas', icon: '🌐' }
+  { to: '/hub', label: 'Tổng quan' },
+  { to: '/library', label: 'Culture Library' },
+  { to: '/stories', label: 'Culture Stories' },
+  { to: '/events', label: 'Culture Events' },
+  { to: '/people-products', label: 'People & Products' },
+  { to: '/reviews', label: 'Pending Review' },
+  { to: '/timeline', label: 'Culture Timeline' },
+  { to: '/atlas-management', label: 'Culture Atlas' }
 ]
 
 export default function Layout() {
@@ -54,7 +54,6 @@ export default function Layout() {
               end={item.to === '/hub'}
               className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}
             >
-              <span className="nav-icon">{item.icon}</span>
               <span className="nav-label">{item.label}</span>
             </NavLink>
           ))}
@@ -62,8 +61,7 @@ export default function Layout() {
 
         <div className="sidebar-footer">
           <a className="atlas-public-btn" href="/atlas" target="_blank" rel="noreferrer">
-            <span>🌐 Xem Culture Atlas</span>
-            <span className="external-arrow">↗</span>
+            <span>Xem Culture Atlas</span>
           </a>
 
           <div className="user-profile-row">
@@ -75,7 +73,7 @@ export default function Layout() {
               <span className="user-email">{session?.user?.email || 'admin@nexture.io'}</span>
             </div>
             <button className="btn-logout" title="Đăng xuất" onClick={handleLogout}>
-              ⏻
+              Đăng xuất
             </button>
           </div>
         </div>

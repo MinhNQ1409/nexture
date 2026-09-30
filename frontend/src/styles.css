@@ -1,6 +1,8 @@
 :root {
-  --font-sans: 'Plus Jakarta Sans', system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  --font-serif: 'Newsreader', Georgia, Cambria, "Times New Roman", Times, serif;
+  --font-sans: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-body: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-display: 'Plus Jakarta Sans', system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-serif: 'Plus Jakarta Sans', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
 
   --color-primary: #10b981;
   --color-primary-dark: #059669;
@@ -24,14 +26,23 @@
 
 body {
   margin: 0;
-  font-family: var(--font-sans);
+  font-family: var(--font-body);
   color: var(--color-text-hub);
   background: var(--color-bg-hub);
   -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-display);
+  letter-spacing: -0.025em;
+  font-weight: 700;
+  color: #0f172a;
 }
 
 button, input, textarea, select {
-  font-family: inherit;
+  font-family: var(--font-body);
 }
 
 /* ========================================================
@@ -135,30 +146,40 @@ button, input, textarea, select {
 .nav-item {
   display: flex;
   align-items: center;
-  gap: 12px;
   color: #94a3b8;
   text-decoration: none;
-  padding: 10px 14px;
-  border-radius: 10px;
+  padding: 10px 16px;
+  border-radius: 8px;
+  font-family: var(--font-body);
   font-size: 13.5px;
   font-weight: 500;
+  letter-spacing: -0.01em;
   transition: all 0.15s ease;
+  position: relative;
 }
 
 .nav-item:hover {
-  background: rgba(255, 255, 255, 0.06);
+  background: rgba(255, 255, 255, 0.05);
   color: #ffffff;
 }
 
 .nav-item.active {
-  background: #10b981;
-  color: #042f2e;
-  font-weight: 700;
-  box-shadow: 0 4px 14px rgba(16, 185, 129, 0.3);
+  background: rgba(16, 185, 129, 0.12);
+  color: #10b981;
+  font-weight: 600;
+  border: 1px solid rgba(16, 185, 129, 0.25);
+  box-shadow: none;
 }
 
-.nav-icon {
-  font-size: 16px;
+.nav-item.active::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 8px;
+  bottom: 8px;
+  width: 3px;
+  background: #10b981;
+  border-radius: 0 2px 2px 0;
 }
 
 .sidebar-footer {
@@ -172,21 +193,24 @@ button, input, textarea, select {
 .atlas-public-btn {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  background: linear-gradient(135deg, rgba(16, 185, 129, 0.15), rgba(45, 212, 191, 0.2));
-  border: 1px solid rgba(45, 212, 191, 0.4);
+  justify-content: center;
+  background: rgba(16, 185, 129, 0.08);
+  border: 1px solid rgba(16, 185, 129, 0.25);
   color: #6ee7b7;
   text-decoration: none;
-  font-size: 13px;
+  font-family: var(--font-body);
+  font-size: 12.5px;
   font-weight: 600;
-  padding: 10px 14px;
-  border-radius: 10px;
-  transition: all 0.2s;
+  letter-spacing: 0.01em;
+  padding: 9px 14px;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+  text-align: center;
 }
 
 .atlas-public-btn:hover {
-  background: rgba(45, 212, 191, 0.25);
-  border-color: #6ee7b7;
+  background: rgba(16, 185, 129, 0.18);
+  border-color: #10b981;
   color: #ffffff;
 }
 
@@ -234,17 +258,21 @@ button, input, textarea, select {
 
 .btn-logout {
   background: transparent;
-  border: 0;
+  border: 1px solid rgba(255, 255, 255, 0.12);
   color: #94a3b8;
-  font-size: 16px;
+  font-family: var(--font-body);
+  font-size: 11px;
+  font-weight: 500;
   cursor: pointer;
-  padding: 6px;
+  padding: 4px 8px;
   border-radius: 6px;
-  transition: all 0.15s;
+  transition: all 0.15s ease;
+  white-space: nowrap;
 }
 
 .btn-logout:hover {
-  color: #ef4444;
+  color: #f87171;
+  border-color: rgba(239, 68, 68, 0.35);
   background: rgba(239, 68, 68, 0.1);
 }
 
@@ -336,35 +364,38 @@ button, input, textarea, select {
 .quick-action-btn {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
   background: #ffffff;
-  border: 1px solid var(--color-border-hub);
-  padding: 10px 16px;
-  border-radius: 12px;
+  border: 1px solid #e2e8f0;
+  padding: 8px 16px;
+  border-radius: 8px;
   color: #334155;
   text-decoration: none;
+  font-family: var(--font-body);
   font-size: 13px;
-  font-weight: 600;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
-  transition: all 0.15s;
+  font-weight: 500;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
+  transition: all 0.15s ease;
   white-space: nowrap;
 }
 
 .quick-action-btn:hover {
   border-color: #10b981;
   color: #059669;
+  background: #f8fafc;
   transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.1);
 }
 
 .quick-action-btn.primary {
-  background: #ecfdf5;
-  border-color: #a7f3d0;
-  color: #065f46;
+  background: #10b981;
+  border-color: #10b981;
+  color: #ffffff;
+  font-weight: 600;
 }
 
 .quick-action-btn.primary:hover {
-  background: #d1fae5;
+  background: #059669;
+  border-color: #059669;
+  color: #ffffff;
 }
 
 /* Hub KPI Grid */
@@ -376,56 +407,79 @@ button, input, textarea, select {
 
 .hub-kpi-card {
   background: #ffffff;
-  border: 1px solid var(--color-border-hub);
-  border-radius: 16px;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
   padding: 18px 20px;
   text-decoration: none;
   color: inherit;
   display: flex;
   flex-direction: column;
-  transition: all 0.2s;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.02);
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
+  position: relative;
+  overflow: hidden;
 }
+
+.hub-kpi-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: #e2e8f0;
+  transition: background 0.2s;
+}
+
+.hub-kpi-card.color-emerald::before { background: #10b981; }
+.hub-kpi-card.color-teal::before { background: #14b8a6; }
+.hub-kpi-card.color-blue::before { background: #3b82f6; }
+.hub-kpi-card.color-purple::before { background: #8b5cf6; }
+.hub-kpi-card.color-slate::before { background: #64748b; }
+.hub-kpi-card.color-amber::before { background: #f59e0b; }
+.hub-kpi-card.color-cyan::before { background: #06b6d4; }
+.hub-kpi-card.color-green::before { background: #10b981; }
 
 .hub-kpi-card:hover {
   transform: translateY(-2px);
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.06);
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.06), 0 8px 10px -6px rgba(0, 0, 0, 0.04);
   border-color: #cbd5e1;
 }
 
 .hub-kpi-card.has-badge {
   border-color: #fbbf24;
-  background: #fffbeb;
+  background: #fffdf5;
 }
 
 .kpi-top {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 8px;
-}
-
-.kpi-icon {
-  font-size: 22px;
+  align-items: baseline;
+  margin-bottom: 6px;
 }
 
 .kpi-count {
-  font-size: 28px;
-  font-weight: 800;
+  font-family: var(--font-display);
+  font-size: 30px;
+  font-weight: 700;
   color: #0f172a;
-  letter-spacing: -0.02em;
+  letter-spacing: -0.03em;
+  line-height: 1;
 }
 
 .kpi-title {
-  font-size: 14px;
-  font-weight: 700;
+  font-family: var(--font-display);
+  font-size: 13.5px;
+  font-weight: 600;
   color: #1e293b;
-  margin-bottom: 2px;
+  margin-bottom: 4px;
+  letter-spacing: -0.01em;
 }
 
 .kpi-desc {
+  font-family: var(--font-body);
   font-size: 12px;
   color: #64748b;
+  line-height: 1.4;
 }
 
 /* Dashboard Columns */

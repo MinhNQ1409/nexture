@@ -54,22 +54,21 @@ export default function Dashboard() {
   }
 
   const statCards = [
-    { title: 'Culture Stories', count: data.stories, icon: '✍️', desc: 'Câu chuyện chiều sâu', link: '/stories', color: 'emerald' },
-    { title: 'Timeline Events', count: data.events, icon: '📅', desc: 'Cột mốc lịch sử', link: '/events', color: 'teal' },
-    { title: 'Đại sứ Văn hóa', count: data.people, icon: '👥', desc: 'Nhân sự & Lãnh đạo', link: '/people-products', color: 'blue' },
-    { title: 'Sản phẩm & Di sản', count: data.products, icon: '🏛️', desc: 'Công trình di sản', link: '/people-products', color: 'purple' },
-    { title: 'Tài liệu Thư viện', count: data.media, icon: '📚', desc: 'Tài liệu & Media gốc', link: '/library', color: 'slate' },
+    { title: 'Culture Stories', count: data.stories, desc: 'Câu chuyện chiều sâu', link: '/stories', color: 'emerald' },
+    { title: 'Timeline Events', count: data.events, desc: 'Cột mốc lịch sử', link: '/events', color: 'teal' },
+    { title: 'Đại sứ Văn hóa', count: data.people, desc: 'Nhân sự & Lãnh đạo', link: '/people-products', color: 'blue' },
+    { title: 'Sản phẩm & Di sản', count: data.products, desc: 'Công trình di sản', link: '/people-products', color: 'purple' },
+    { title: 'Tài liệu Thư viện', count: data.media, desc: 'Tài liệu & Media gốc', link: '/library', color: 'slate' },
     {
       title: 'Chờ kiểm duyệt AI',
       count: data.pendingReview,
-      icon: '🔍',
       desc: 'Cần chuyên gia duyệt',
       link: '/reviews',
       color: data.pendingReview > 0 ? 'amber' : 'gray',
       highlight: data.pendingReview > 0
     },
-    { title: 'Sẵn sàng Atlas', count: data.publicContent, icon: '✨', desc: 'VERIFIED & PUBLIC', link: '/atlas-management', color: 'cyan' },
-    { title: 'Đã xuất bản Atlas', count: data.atlasPublished, icon: '🌐', desc: 'Snapshot bất biến', link: '/atlas-management', color: 'green' }
+    { title: 'Sẵn sàng Atlas', count: data.publicContent, desc: 'VERIFIED & PUBLIC', link: '/atlas-management', color: 'cyan' },
+    { title: 'Đã xuất bản Atlas', count: data.atlasPublished, desc: 'Snapshot bất biến', link: '/atlas-management', color: 'green' }
   ]
 
   return (
@@ -86,7 +85,6 @@ export default function Dashboard() {
         <div className="hub-header-actions">
           <a href="/atlas" target="_blank" rel="noreferrer" className="btn-atlas-preview">
             <span>Mở Culture Atlas</span>
-            <span>↗</span>
           </a>
         </div>
       </div>
@@ -94,23 +92,18 @@ export default function Dashboard() {
       {/* Quick Action Ribbon */}
       <div className="quick-actions-bar">
         <Link to="/stories" className="quick-action-btn">
-          <span className="qa-icon">✍️</span>
           <span>Thêm Story</span>
         </Link>
         <Link to="/events" className="quick-action-btn">
-          <span className="qa-icon">📅</span>
           <span>Ghi nhận Cột mốc</span>
         </Link>
         <Link to="/library" className="quick-action-btn">
-          <span className="qa-icon">📥</span>
           <span>Nạp tài liệu gốc</span>
         </Link>
         <Link to="/reviews" className="quick-action-btn">
-          <span className="qa-icon">🔍</span>
           <span>Duyệt đề xuất AI {data.pendingReview > 0 ? `(${data.pendingReview})` : ''}</span>
         </Link>
         <Link to="/atlas-management" className="quick-action-btn primary">
-          <span className="qa-icon">🌐</span>
           <span>Quản lý Xuất bản Atlas</span>
         </Link>
       </div>
@@ -120,7 +113,6 @@ export default function Dashboard() {
         {statCards.map(c => (
           <Link to={c.link} key={c.title} className={`hub-kpi-card color-${c.color} ${c.highlight ? 'has-badge' : ''}`}>
             <div className="kpi-top">
-              <span className="kpi-icon">{c.icon}</span>
               <span className="kpi-count">{c.count}</span>
             </div>
             <div className="kpi-title">{c.title}</div>

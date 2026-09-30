@@ -68,15 +68,15 @@ export default function Login() {
           />
         </label>
 
-        {error && <div className="hub-error-box" style={{ marginBottom: '14px' }}>✕ {error}</div>}
+        {error && <div className="hub-error-box" style={{ marginBottom: '14px' }}>{error}</div>}
 
         <button type="submit" disabled={loading}>
-          {loading ? 'Đang xác thực…' : 'Đăng nhập vào Culture Hub →'}
+          {loading ? 'Đang xác thực…' : 'Đăng nhập vào Culture Hub'}
         </button>
 
         <div style={{ marginTop: '20px', textAlign: 'center', paddingTop: '16px', borderTop: '1px solid #f1f5f9' }}>
           <Link to="/atlas" style={{ fontSize: '13px', color: '#059669', fontWeight: 600, textDecoration: 'none' }}>
-            Xem NexTure Culture Atlas công khai ↗
+            Xem NexTure Culture Atlas công khai
           </Link>
         </div>
       </form>
