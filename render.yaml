@@ -23,4 +23,4 @@ databases:
     plan: free
     region: singapore
     databaseName: nexture
-    user: postgres
+    user: nexture_user
