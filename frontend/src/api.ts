@@ -1,4 +1,5 @@
-const API_BASE = import.meta.env.VITE_API_BASE ?? 'http://localhost:8080/api'
+const rawBase = import.meta.env.VITE_API_BASE ?? 'http://localhost:8080/api'
+const API_BASE = rawBase.endsWith('/') ? rawBase.slice(0, -1) : rawBase
 
 export type Session = {
   token: string
@@ -26,7 +27,8 @@ export async function api<T>(path: string, options: RequestInit = {}): Promise<T
   const headers = new Headers(options.headers)
   if (!(options.body instanceof FormData)) headers.set('Content-Type', 'application/json')
   if (session?.token) headers.set('Authorization', `Bearer ${session.token}`)
-  const res = await fetch(`${API_BASE}${path}`, { ...options, headers })
+  const normalizedPath = path.startsWith('/') ? path : `/${path}`
+  const res = await fetch(`${API_BASE}${normalizedPath}`, { ...options, headers })
   if (!res.ok) throw new Error((await res.text()) || `HTTP ${res.status}`)
   if (res.status === 204) return undefined as T
   const text = await res.text()
