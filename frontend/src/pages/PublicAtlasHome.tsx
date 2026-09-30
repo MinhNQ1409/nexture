@@ -58,17 +58,101 @@ const coreValueColors: Record<string, string> = {
   Empathy: '#ec4899'
 }
 
+const FALLBACK_PROFILE: CompanyProfile = {
+  organization: {
+    name: 'NexTure Technology',
+    slug: 'nexture-technology',
+    foundedYear: 2024,
+    industry: 'Nền tảng Quản trị & Di sản Văn hóa Doanh nghiệp',
+    employeeScale: '150 - 300 nhân sự',
+    location: 'TP. Hồ Chí Minh & Hà Nội, Việt Nam',
+    website: 'https://nexture.culture.io',
+    shortDescription: 'Tiên phong kiến tạo nền tảng Culture Hub và Culture Atlas số hóa di sản văn hóa doanh nghiệp tại Đông Nam Á.',
+    founderName: 'Đội ngũ Sáng lập NexTure',
+    coreValues: 'Trust · Learning · Creativity · Empathy',
+    cultureManifesto: 'Văn hóa không phải là văn mẫu đóng khung trên tường, mà là tập hợp những quyết định trung thực, dũng cảm và tử tế được thực hành mỗi ngày ngay cả khi không có ai giám sát.'
+  },
+  coreValuesList: [
+    { id: '1', tag: 'Trust', name: 'Niềm tin & Toàn vẹn', description: 'Minh bạch tuyệt đối, dám nhận trách nhiệm và luôn giữ trọn cam kết với đồng đội và đối tác.', keywords: 'Trung thực · Minh bạch · Trách nhiệm', color: '#10b981' },
+    { id: '2', tag: 'Learning', name: 'Học hỏi & Đổi mới', description: 'Tinh thần cởi mở trước cái mới, không giấu dốt và sẵn sàng học hỏi từ những thất bại thực tế.', keywords: 'Cải tiến · Phản biện · Đổi mới', color: '#0ea5e9' },
+    { id: '3', tag: 'Creativity', name: 'Sáng tạo & Đột phá', description: 'Tìm kiếm giải pháp khác biệt cho các bài toán khó, không đi theo lối mòn tư duy truyền thống.', keywords: 'Đột phá · Khác biệt · Tinh gọn', color: '#f59e0b' },
+    { id: '4', tag: 'Empathy', name: 'Thấu cảm & Tử tế', description: 'Lắng nghe sâu sắc, đặt mình vào vị trí của người khác và đối xử tử tế trong mọi tương tác.', keywords: 'Tử tế · Lắng nghe · Đồng hành', color: '#ec4899' }
+  ],
+  stories: [
+    {
+      id: 's1',
+      entityType: 'STORY',
+      slug: 'khat-vong-so-hoa-dna-van-hoa-doanh-nghiep',
+      title: 'Khát vọng Số hóa DNA Văn hóa Doanh nghiệp',
+      summary: 'Hành trình ra đời từ trăn trở trước sự đứt gãy ký ức và mất mát di sản văn hóa của các doanh nghiệp Việt Nam khi thế hệ sáng lập lui về hậu trường.',
+      content: 'Đầu năm 2024, trong những buổi cà phê dài tại Sài Gòn, đội ngũ sáng lập NexTure nhận ra một thực tế đau lòng: Rất nhiều doanh nghiệp Việt Nam sau 10, 20 năm phát triển rực rỡ bỗng rơi vào khủng hoảng khi thế hệ sáng lập lui về hậu trường. Những bài học xương máu, những đêm thức trắng lập nghiệp, triết lý ứng xử với khách hàng và tinh thần phụng sự dường như chỉ nằm trong ký ức của một vài người và dần tan biến theo năm tháng. Thế hệ nhân sự kế cận bước vào công ty chỉ nhìn thấy những tấm bảng khẩu hiệu khô khan đóng khung trên tường, hoàn toàn không cảm nhận được ngọn lửa đã tạo nên tổ chức. NexTure ra đời từ chính niềm tin cháy bỏng: Văn hóa không phải là văn mẫu, mà là một loại tài sản vô hình quý giá nhất của doanh nghiệp. Cần có một Digital Culture Hub để ghi nhận văn hóa ngay từ khi nó đang hình thành, và một Culture Atlas để biến những giá trị vô hình đó thành một tấm bản đồ di sản sống động, minh bạch và trường tồn.',
+      occurredAt: '2024-01-15T00:00:00Z',
+      coreValueTag: 'Trust',
+      version: 1
+    },
+    {
+      id: 's2',
+      entityType: 'STORY',
+      slug: 'tranh-luan-luong-tam-ai-phuc-vu-di-san',
+      title: 'Tranh luận Lương tâm: AI phục vụ Di sản, Không thay thế Con người',
+      summary: 'Cuộc tranh luận nảy lửa suốt 6 giờ đêm về giới hạn của AI trong việc bảo tồn ký ức văn hóa và nguyên tắc con người luôn là mắt xích kiểm chứng cuối cùng.',
+      content: 'Trong giai đoạn phát triển tính năng AI Structuring cho Culture Hub, đội ngũ kỹ sư của NexTure từng đối mặt với một cám dỗ công nghệ lớn: Tự động hóa 100%. Khi đó, AI có thể tự đọc tài liệu, tự bịa thêm các chi tiết cảm xúc và tự động xuất bản câu chuyện lên Culture Atlas chỉ sau một cú nhấp chuột. Trong buổi họp đêm căng thẳng kéo dài hơn 6 tiếng tại văn phòng, ban sáng lập đã đưa ra một quyết định mang tính bản lề cho đạo đức sản phẩm: Tuyệt đối không để AI tự tạo dữ liệu văn hóa chính thức. Văn hóa là sự thật, là trải nghiệm sống của con người, không thuật toán nào có quyền tự ý tô vẽ hay thêu dệt ký ức. NexTure thiết lập nguyên tắc bất biến: AI chỉ đóng vai trò là người thư ký mẫn cán giúp cấu trúc dữ liệu thô (AI_SUGGESTED). Con người bắt buộc phải là người đọc lại, kiểm chứng sự thật (VERIFIED), và chính Admin mới là người quyết định tạo bản snapshot xuất bản (PUBLISHED). Sự thận trọng này chính là lời cam kết cao nhất của NexTure về tính chân thực của lịch sử.',
+      occurredAt: '2024-03-20T00:00:00Z',
+      coreValueTag: 'Learning',
+      version: 1
+    },
+    {
+      id: 's3',
+      entityType: 'STORY',
+      slug: 'van-hoa-dong-sang-tao-va-lang-nghe-khong-khoang-cach',
+      title: 'Văn hóa Đồng sáng tạo và Lắng nghe Không khoảng cách',
+      summary: 'Xóa bỏ tháp quyền lực để mọi cá nhân từ thực tập sinh đến nhà sáng lập đều có quyền ghi nhận di sản văn hóa và đóng góp vào thư viện chung.',
+      content: 'Làm thế nào một công ty công nghệ văn hóa có thể thực hành chính xác những gì mình rao giảng cho khách hàng? Tại NexTure, chúng tôi từ chối mô hình văn hóa chỉ đạo từ trên xuống. Một nét văn hóa độc đáo đã được thiết lập: Bất kỳ thành viên nào — từ một bạn thực tập sinh tuần đầu tiên đến thành viên sáng lập — đều có quyền đóng góp câu chuyện, hình ảnh, bài học kinh nghiệm vào Culture Library. Những khoảnh khắc đồng đội hỗ trợ nhau gỡ lỗi lúc nửa đêm, câu chuyện một bạn chăm sóc khách hàng kiên nhẫn lắng nghe lời phàn nàn suốt 2 tiếng... tất cả đều được trân trọng và lưu giữ bình đẳng. Văn hóa tại NexTure được nuôi dưỡng bằng sự thấu cảm hàng ngày. Chúng tôi tin rằng, văn hóa mạnh mẽ nhất không đến từ các bài phát biểu của CEO, mà đến từ hàng ngàn hành động tử tế vô danh của từng con người trong tổ chức.',
+      occurredAt: '2024-06-01T00:00:00Z',
+      coreValueTag: 'Empathy',
+      version: 1
+    },
+    {
+      id: 's4',
+      entityType: 'STORY',
+      slug: 'khung-hoang-ban-phat-hanh-dau-tien',
+      title: 'Khủng hoảng Bản phát hành đầu tiên: Bài học về Niềm tin và Sự Minh bạch',
+      summary: 'Sự cố kỹ thuật nghiêm trọng trong đợt thử nghiệm đầu tiên và bước ngoặt thức trắng 3 đêm khai sinh ra kiến trúc Snapshot bất biến bảo vệ dữ liệu vĩnh cửu.',
+      content: 'Tháng 5/2024, chỉ 48 giờ trước khi bàn giao hệ thống thí điểm cho khách hàng doanh nghiệp đầu tiên, hệ thống đồng bộ dữ liệu giữa Hub và Atlas gặp lỗi đồng thời (race condition) khiến một số dữ liệu đang chỉnh sửa nháp bị rò rỉ ra trang hiển thị bên ngoài. Thay vì tìm cách che giấu hay đổ lỗi cho hạ tầng, đội ngũ sáng lập đã chọn con đường dũng cảm nhất: Chủ động gọi điện nhận trách nhiệm với ban giám đốc đối tác, giải thích rõ nguyên nhân kỹ thuật và xin thêm 72 giờ để thiết kế lại toàn bộ cơ chế bảo mật. Suốt 3 ngày 3 đêm sau đó, toàn bộ đội ngũ kỹ thuật thức trắng trong văn phòng, ăn mì gói và vẽ lại luồng dữ liệu. Đó là thời khắc khai sinh ra kiến trúc Immutable Publication Snapshot (Bản chụp ấn phẩm độc lập): Tách rời hoàn toàn bản ghi đang sửa đổi trong Hub với bản chụp công khai trên Atlas. Khách hàng đối tác không những không hủy hợp đồng mà còn gửi lời khen ngợi đặc biệt cho sự trung thực và tính chuyên nghiệp của NexTure.',
+      occurredAt: '2024-05-25T00:00:00Z',
+      coreValueTag: 'Creativity',
+      version: 1
+    }
+  ],
+  timeline: [
+    { id: 'e1', entityType: 'EVENT', slug: 'khoi-tao-nexture', title: 'Khởi tạo NexTure và sứ mệnh Digital Culture Hub', summary: 'Chính thức thành lập tại TP. Hồ Chí Minh với niềm tin đưa văn hóa doanh nghiệp thành năng lực cạnh tranh cốt lõi và di sản số của người Việt.', content: 'Chính thức thành lập tại TP. Hồ Chí Minh với niềm tin đưa văn hóa doanh nghiệp thành năng lực cạnh tranh cốt lõi và di sản số của người Việt.', occurredAt: '2024-01-10T00:00:00Z', coreValueTag: 'Trust', version: 1 },
+    { id: 'e2', entityType: 'EVENT', slug: 'quyet-dinh-dao-duc-human-in-the-loop', title: 'Quyết định Đạo đức: Thiết lập nguyên tắc Human-in-the-loop cho AI', summary: 'Khẳng định cam kết lương tâm: AI chỉ đóng vai trò phân tích gợi ý, con người luôn là mắt xích kiểm chứng cuối cùng.', content: 'Khẳng định cam kết lương tâm: AI chỉ đóng vai trò phân tích gợi ý, con người luôn là mắt xích kiểm chứng cuối cùng để bảo đảm tính chân thực của văn hóa.', occurredAt: '2024-03-25T00:00:00Z', coreValueTag: 'Learning', version: 1 },
+    { id: 'e3', entityType: 'EVENT', slug: 'phat-minh-kien-truc-immutable-snapshot', title: 'Phát minh Kiến trúc Immutable Publication Snapshot', summary: 'Tách rời hoàn toàn bản ghi đang chỉnh sửa nội bộ trong Hub với bản chụp công khai trên Atlas.', content: 'Tách rời hoàn toàn bản ghi đang chỉnh sửa nội bộ trong Hub với bản chụp công khai trên Atlas, giúp dữ liệu công khai luôn an toàn và bất biến.', occurredAt: '2024-05-28T00:00:00Z', coreValueTag: 'Creativity', version: 1 },
+    { id: 'e4', entityType: 'EVENT', slug: 'kiem-thu-pilot-10-doanh-nghiep', title: 'Hoàn thành Kiểm thử Pilot thành công với 10 doanh nghiệp SME', summary: '10 doanh nghiệp thí điểm hoàn tất trọn vẹn chuỗi: Thu thập tài liệu -> AI phân tích -> Phê duyệt -> Culture Timeline -> Xuất bản Culture Atlas.', content: '10 doanh nghiệp thí điểm hoàn tất trọn vẹn chuỗi: Thu thập tài liệu -> AI phân tích -> Phê duyệt -> Culture Timeline -> Xuất bản Culture Atlas.', occurredAt: '2024-07-15T00:00:00Z', coreValueTag: 'Trust', version: 1 },
+    { id: 'e5', entityType: 'EVENT', slug: 'ra-mat-culture-atlas-v2', title: 'Chính thức ra mắt Bản đồ Văn hóa — NexTure Culture Atlas V2', summary: 'Xuất bản phiên bản công khai hoàn chỉnh, mở ra kỷ nguyên mới cho việc quản trị và lan tỏa văn hóa doanh nghiệp tại Việt Nam.', content: 'Xuất bản phiên bản công khai hoàn chỉnh, mở ra kỷ nguyên mới cho việc quản trị và lan tỏa văn hóa doanh nghiệp tại Việt Nam.', occurredAt: '2024-09-30T00:00:00Z', coreValueTag: 'Empathy', version: 1 }
+  ],
+  people: [
+    { id: 'p1', entityType: 'PERSON', slug: 'tran-minh-duc', title: 'Trần Minh Đức', summary: 'Đồng sáng lập & Giám đốc Sản phẩm Văn hóa', content: 'Hơn 12 năm kinh nghiệm trong lĩnh vực tư vấn chuyển đổi tổ chức và xây dựng văn hóa doanh nghiệp tại Đông Nam Á. Văn hóa không phải là những khẩu hiệu trên tường, mà là những gì chúng ta lựa chọn hành động khi không có ai giám sát.', coreValueTag: 'Trust', version: 1 },
+    { id: 'p2', entityType: 'PERSON', slug: 'nguyen-hoang-mai', title: 'Nguyễn Hoàng Mai', summary: 'Trưởng nhóm Nghiên cứu AI & Dữ liệu Tri thức', content: 'Tiến sĩ Khoa học Máy tính chuyên sâu về Xử lý Ngôn ngữ Tự nhiên và Hệ thống Tri thức Ngữ nghĩa. AI phải học cách thấu hiểu chiều sâu ngôn từ và cảm xúc văn hóa Việt Nam, thay vì chỉ là các phép toán số liệu đơn thuần.', coreValueTag: 'Learning', version: 1 },
+    { id: 'p3', entityType: 'PERSON', slug: 'le-khac-hung', title: 'Lê Khắc Hùng', summary: 'Kiến trúc sư Trưởng Hệ thống & Bảo mật Dữ liệu', content: 'Chuyên gia kiến trúc hệ thống dữ liệu phân tán với nguyên tắc bảo mật và toàn vẹn dữ liệu ở cấp độ cao nhất. Sự trung thực trong kỹ thuật và tính toàn vẹn của dữ liệu văn hóa là cam kết sống còn của chúng tôi với khách hàng.', coreValueTag: 'Creativity', version: 1 }
+  ],
+  products: [
+    { id: 'pr1', entityType: 'PRODUCT', slug: 'nexture-digital-culture-hub', title: 'NexTure Digital Culture Hub', summary: 'Nền tảng Doanh nghiệp (Enterprise Platform)', content: 'Không gian quản trị và AI cấu trúc dữ liệu di sản văn hóa nội bộ, giúp doanh nghiệp ghi nhận và kiểm duyệt văn hóa ngay từ khi đang hình thành.', coreValueTag: 'Trust', version: 1 },
+    { id: 'pr2', entityType: 'PRODUCT', slug: 'nexture-culture-atlas', title: 'NexTure Culture Atlas', summary: 'Bản đồ Văn hóa Công khai (Public Atlas)', content: 'Cổng Bản đồ Văn hóa Doanh nghiệp công khai, trực quan hóa toàn bộ câu chuyện, con người, dòng thời gian và giá trị cốt lõi ra thế giới.', coreValueTag: 'Creativity', version: 1 },
+    { id: 'pr3', entityType: 'PRODUCT', slug: 'responsible-ai-structuring-engine', title: 'Responsible AI Structuring Engine', summary: 'Sáng kiến Công nghệ AI (AI Initiative)', content: 'Bộ máy AI phân tích tài liệu văn hóa thô với nguyên tắc bảo vệ quyền riêng tư và đảm bảo con người luôn là mắt xích kiểm duyệt tối thượng.', coreValueTag: 'Learning', version: 1 }
+  ]
+}
+
 export default function PublicAtlasHome() {
   const [profile, setProfile] = useState<CompanyProfile | null>(null)
   const [selectedCoreValue, setSelectedCoreValue] = useState<string | null>(null)
   const [searchTerm, setSearchTerm] = useState('')
   const [activeStory, setActiveStory] = useState<AtlasItem | null>(null)
   const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
+  const [isUsingFallback, setIsUsingFallback] = useState(false)
 
   function loadData() {
     setLoading(true)
-    setError(null)
     api<CompanyProfile>('/atlas/nexture-technology')
       .then(res => {
         if (res && res.organization) {
@@ -90,13 +174,16 @@ export default function PublicAtlasHome() {
             people: res.people || [],
             products: res.products || []
           })
+          setIsUsingFallback(false)
         } else {
-          setError('Không tìm thấy thông tin tổ chức.')
+          setProfile(FALLBACK_PROFILE)
+          setIsUsingFallback(true)
         }
       })
       .catch(err => {
-        console.error('Lỗi nạp dữ liệu văn hóa:', err)
-        setError('Không thể kết nối đến máy chủ API. Vui lòng thử lại.')
+        console.warn('Không thể kết nối đến máy chủ API, tự động nạp dữ liệu di sản văn hóa dự phòng:', err)
+        setProfile(FALLBACK_PROFILE)
+        setIsUsingFallback(true)
       })
       .finally(() => {
         setLoading(false)
@@ -140,7 +227,7 @@ export default function PublicAtlasHome() {
     )
   }
 
-  if (error || !profile) {
+  if (!profile) {
     return (
       <div className="atlas-public-experience">
         <header className="atlas-top-nav">
@@ -161,13 +248,12 @@ export default function PublicAtlasHome() {
         </header>
 
         <main className="atlas-body-wrapper" style={{ minHeight: '75vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', textAlign: 'center', padding: '3rem 1rem' }}>
-          <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>⚠️</div>
           <h2 style={{ fontFamily: 'Outfit, sans-serif', color: '#132e22', marginBottom: '0.75rem' }}>Không thể kết nối máy chủ dữ liệu</h2>
           <p style={{ color: '#4d695d', maxWidth: '480px', marginBottom: '1.5rem', lineHeight: '1.6' }}>
-            {error || 'Chưa thể tải dữ liệu văn hóa từ hệ sinh thái.'}
+            Chưa thể tải dữ liệu văn hóa từ hệ sinh thái.
           </p>
           <button type="button" onClick={loadData} className="atlas-hero-button" style={{ border: 'none', cursor: 'pointer' }}>
-            Thử tải lại dữ liệu ↺
+            Thử tải lại dữ liệu
           </button>
         </main>
       </div>
@@ -233,6 +319,12 @@ export default function PublicAtlasHome() {
         </div>
       </header>
 
+      {isUsingFallback && (
+        <div style={{ background: '#ecfdf5', color: '#065f46', borderBottom: '1px solid #a7f3d0', padding: '0.625rem 1rem', fontSize: '0.85rem', textAlign: 'center', fontWeight: 500 }}>
+          Bản đồ Văn hóa NexTure (Chế độ xem trước). Dữ liệu sẽ tự động đồng bộ thời gian thực khi kết nối với máy chủ API.
+        </div>
+      )}
+
       <main className="atlas-body-wrapper">
         {/* 2. Hero Section: Định danh Doanh nghiệp & Tuyên ngôn Văn hóa */}
         <section id="manifesto" className="atlas-hero-section">
@@ -241,13 +333,13 @@ export default function PublicAtlasHome() {
             <div className="atlas-hero-content">
             <div className="hero-top-meta">
               <span className="industry-pill">{o.industry || 'CÔNG NGHỆ & QUẢN TRỊ VĂN HÓA'}</span>
-              <span className="location-pill">📍 {o.location || 'TP. Hồ Chí Minh & Hà Nội'}</span>
-              <span className="verified-pill">✓ Bản đồ Văn hóa Đã Xác minh</span>
+              <span className="location-pill">{o.location || 'TP. Hồ Chí Minh & Hà Nội'}</span>
+              <span className="verified-pill">Bản đồ Văn hóa Đã Xác minh</span>
             </div>
 
             <h1 className="atlas-hero-company-name">{o.name}</h1>
             <p className="atlas-hero-tagline">{o.shortDescription}</p>
-            <div className="atlas-hero-actions"><a href="#values" className="atlas-hero-button">Khám phá Culture Atlas <span aria-hidden="true">↗</span></a><a href="#stories" className="atlas-hero-secondary">Đọc câu chuyện <span aria-hidden="true">↗</span></a></div>
+            <div className="atlas-hero-actions"><a href="#values" className="atlas-hero-button">Khám phá Culture Atlas</a><a href="#stories" className="atlas-hero-secondary">Đọc câu chuyện</a></div>
 
             <div className="atlas-meta-bar">
               <div className="meta-col">
