@@ -65,6 +65,52 @@ public static class LibraryAiReviewEndpoints
             return Results.Ok(new { media, source });
         }).DisableAntiforgery().RequireAuthorization();
 
+        app.MapDelete("/api/orgs/{orgId:guid}/library/sources/{id:guid}", async (Guid orgId, Guid id, ClaimsPrincipal user, AppDbContext db, OrganizationAccess access) =>
+        {
+            var m = await access.GetMembershipAsync(user, orgId);
+            if (m is null || !OrganizationAccess.CanEdit(m.Role)) return Results.Forbid();
+            var row = await db.Sources.FirstOrDefaultAsync(x => x.OrganizationId == orgId && x.Id == id);
+            if (row is null) return Results.NotFound();
+
+            var suggestions = await db.AiSuggestions.Where(x => x.OrganizationId == orgId && x.SourceId == id).ToListAsync();
+            var suggIds = suggestions.Select(x => x.Id).ToList();
+            var reviews = await db.Reviews.Where(x => x.OrganizationId == orgId && suggIds.Contains(x.SuggestionId)).ToListAsync();
+            if (reviews.Count > 0) db.Reviews.RemoveRange(reviews);
+            if (suggestions.Count > 0) db.AiSuggestions.RemoveRange(suggestions);
+
+            db.Sources.Remove(row);
+            await db.SaveChangesAsync();
+            return Results.NoContent();
+        }).RequireAuthorization();
+
+        app.MapDelete("/api/orgs/{orgId:guid}/library/media/{id:guid}", async (Guid orgId, Guid id, ClaimsPrincipal user, AppDbContext db, OrganizationAccess access, IWebHostEnvironment env) =>
+        {
+            var m = await access.GetMembershipAsync(user, orgId);
+            if (m is null || !OrganizationAccess.CanEdit(m.Role)) return Results.Forbid();
+            var row = await db.MediaAssets.FirstOrDefaultAsync(x => x.OrganizationId == orgId && x.Id == id);
+            if (row is null) return Results.NotFound();
+
+            var linkedSources = await db.Sources.Where(s => s.OrganizationId == orgId && s.MediaAssetId == id).ToListAsync();
+            foreach (var s in linkedSources) s.MediaAssetId = null;
+
+            try
+            {
+                if (!string.IsNullOrEmpty(row.FileUrl) && row.FileUrl.StartsWith("/uploads/"))
+                {
+                    var relative = row.FileUrl.TrimStart('/');
+                    var fullPath = Path.Combine(env.ContentRootPath, relative.Replace('/', Path.DirectorySeparatorChar));
+                    if (File.Exists(fullPath)) File.Delete(fullPath);
+                }
+            }
+            catch
+            {
+            }
+
+            db.MediaAssets.Remove(row);
+            await db.SaveChangesAsync();
+            return Results.NoContent();
+        }).RequireAuthorization();
+
         app.MapPost("/api/orgs/{orgId:guid}/ai/analyze/{sourceId:guid}", async (Guid orgId, Guid sourceId, ClaimsPrincipal user, AppDbContext db, OrganizationAccess access, IAiStructuringService ai, CancellationToken ct) =>
         {
             var m = await access.GetMembershipAsync(user, orgId);

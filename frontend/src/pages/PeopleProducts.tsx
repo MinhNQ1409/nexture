@@ -170,6 +170,36 @@ export default function PeopleProducts() {
     }
   }
 
+  async function handleDeletePerson(id: string, name: string) {
+    if (!window.confirm(`Bạn có chắc chắn muốn xóa hồ sơ "${name}"? Hành động này cũng sẽ gỡ hồ sơ khỏi Culture Atlas nếu đã xuất bản.`)) return
+    setBusy(id)
+    try {
+      await api(`/orgs/${org}/people/${id}`, { method: 'DELETE' })
+      setNotification(`Đã xóa hồ sơ "${name}" thành công!`)
+      setTimeout(() => setNotification(''), 4000)
+      await load()
+    } catch (err) {
+      alert(`Lỗi khi xóa hồ sơ nhân sự: ${err}`)
+    } finally {
+      setBusy('')
+    }
+  }
+
+  async function handleDeleteProduct(id: string, name: string) {
+    if (!window.confirm(`Bạn có chắc chắn muốn xóa sản phẩm/dự án "${name}"? Hành động này cũng sẽ gỡ sản phẩm khỏi Culture Atlas nếu đã xuất bản.`)) return
+    setBusy(id)
+    try {
+      await api(`/orgs/${org}/products/${id}`, { method: 'DELETE' })
+      setNotification(`Đã xóa sản phẩm/dự án "${name}" thành công!`)
+      setTimeout(() => setNotification(''), 4000)
+      await load()
+    } catch (err) {
+      alert(`Lỗi khi xóa sản phẩm: ${err}`)
+    } finally {
+      setBusy('')
+    }
+  }
+
   const getCvConfig = (tag?: string) => {
     return CORE_VALUES.find(x => x.value.toLowerCase() === (tag || '').toLowerCase())
   }
@@ -187,19 +217,18 @@ export default function PeopleProducts() {
         <div className="hub-header-actions">
           {activeTab === 'people' ? (
             <button className="btn-primary" onClick={() => setShowPersonModal(!showPersonModal)}>
-              {showPersonModal ? '✕ Đóng form' : '+ Thêm Đại sứ Văn hóa'}
+              {showPersonModal ? 'Đóng form' : 'Thêm Đại sứ Văn hóa'}
             </button>
           ) : (
             <button className="btn-primary" onClick={() => setShowProductModal(!showProductModal)}>
-              {showProductModal ? '✕ Đóng form' : '+ Thêm Sản phẩm Di sản'}
+              {showProductModal ? 'Đóng form' : 'Thêm Sản phẩm Di sản'}
             </button>
           )}
         </div>
       </div>
 
       {notification && (
-        <div className="notification-banner" style={{ background: '#ecfdf5', color: '#065f46', border: '1px solid #a7f3d0', padding: '0.875rem 1.25rem', borderRadius: '8px', marginBottom: '1.5rem', fontWeight: 500, display: 'flex', alignItems: 'center', gap: '8px' }}>
-          <span>✓</span>
+        <div className="notification-banner" style={{ background: '#ecfdf5', color: '#065f46', border: '1px solid #a7f3d0', padding: '0.875rem 1.25rem', borderRadius: '8px', marginBottom: '1.5rem', fontWeight: 500 }}>
           <span>{notification}</span>
         </div>
       )}
@@ -210,13 +239,13 @@ export default function PeopleProducts() {
           className={`hub-tab-btn ${activeTab === 'people' ? 'active' : ''}`}
           onClick={() => setActiveTab('people')}
         >
-          👥 Đại sứ Văn hóa & Lãnh đạo ({people.length})
+          Đại sứ Văn hóa & Lãnh đạo ({people.length})
         </button>
         <button
           className={`hub-tab-btn ${activeTab === 'products' ? 'active' : ''}`}
           onClick={() => setActiveTab('products')}
         >
-          🚀 Sản phẩm & Dự án Di sản ({products.length})
+          Sản phẩm & Dự án Di sản ({products.length})
         </button>
       </div>
 
@@ -306,7 +335,7 @@ export default function PeopleProducts() {
                   Hủy
                 </button>
                 <button type="submit" className="btn-primary" disabled={busy === 'person'}>
-                  {busy === 'person' ? 'Đang lưu & Xuất bản…' : (personPublishDirectly ? '🚀 Lưu & Xuất bản lên Atlas' : 'Lưu Hồ sơ')}
+                  {busy === 'person' ? 'Đang lưu & Xuất bản…' : (personPublishDirectly ? 'Lưu & Xuất bản lên Atlas' : 'Lưu Hồ sơ')}
                 </button>
               </div>
             </form>
@@ -320,7 +349,7 @@ export default function PeopleProducts() {
             {loading ? (
               <div className="loading-card">Đang tải hồ sơ nhân sự…</div>
             ) : people.length === 0 ? (
-              <div className="empty-card">Chưa có hồ sơ nhân sự nào. Bấm &ldquo;+ Thêm Đại sứ Văn hóa&rdquo; để khởi tạo!</div>
+              <div className="empty-card">Chưa có hồ sơ nhân sự nào. Bấm &ldquo;Thêm Đại sứ Văn hóa&rdquo; để khởi tạo!</div>
             ) : (
               <div className="people-hub-grid">
                 {people.map(p => {
@@ -357,24 +386,24 @@ export default function PeopleProducts() {
                           </span>
                         )}
                         <span className={`badge-status ${p.status.toLowerCase()}`}>
-                          {p.status === 'VERIFIED' ? '✓ VERIFIED' : p.status}
+                          {p.status}
                         </span>
                         <span className={`badge-vis ${p.visibility.toLowerCase()}`}>
-                          {p.visibility === 'PUBLIC' ? '🌐 PUBLIC' : '🔒 INTERNAL'}
+                          {p.visibility}
                         </span>
                       </div>
 
                       <div className="person-card-footer">
                         {p.isAtlasPublished ? (
-                          <div style={{ display: 'flex', gap: '8px', alignItems: 'center', width: '100%', justifyContent: 'space-between' }}>
-                            <span className="ready-atlas-pill">🌐 Đã lên Atlas</span>
+                          <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                            <span className="ready-atlas-pill">Đã lên Atlas</span>
                             <button
                               className="btn-action-small"
                               disabled={busy === p.id}
                               onClick={() => prepareAtlas('PERSON', p.id)}
                               title="Đồng bộ cập nhật mới nhất lên Culture Atlas"
                             >
-                              {busy === p.id ? 'Đang đồng bộ…' : '🔄 Cập nhật Atlas'}
+                              {busy === p.id ? 'Đang đồng bộ…' : 'Cập nhật Atlas'}
                             </button>
                             <a
                               href="/#people"
@@ -382,7 +411,7 @@ export default function PeopleProducts() {
                               rel="noreferrer"
                               style={{ fontSize: '0.8rem', color: '#10b981', textDecoration: 'none', fontWeight: 600 }}
                             >
-                              Xem trên Atlas ↗
+                              Xem trên Atlas
                             </a>
                           </div>
                         ) : (
@@ -392,9 +421,17 @@ export default function PeopleProducts() {
                             onClick={() => prepareAtlas('PERSON', p.id)}
                             title="Chuyển sang VERIFIED + PUBLIC và xuất bản ngay lên Culture Atlas"
                           >
-                            {busy === p.id ? 'Đang xử lý…' : '🚀 Xuất bản lên Atlas'}
+                            {busy === p.id ? 'Đang xử lý…' : 'Xuất bản lên Atlas'}
                           </button>
                         )}
+                        <button
+                          className="btn-delete-small"
+                          disabled={busy === p.id}
+                          onClick={() => handleDeletePerson(p.id, p.fullName)}
+                          title="Xóa hồ sơ này"
+                        >
+                          Xóa
+                        </button>
                       </div>
                     </div>
                   )
@@ -485,7 +522,7 @@ export default function PeopleProducts() {
                   Hủy
                 </button>
                 <button type="submit" className="btn-primary" disabled={busy === 'product'}>
-                  {busy === 'product' ? 'Đang lưu & Xuất bản…' : (productPublishDirectly ? '🚀 Lưu & Xuất bản lên Atlas' : 'Lưu Sản phẩm Di sản')}
+                  {busy === 'product' ? 'Đang lưu & Xuất bản…' : (productPublishDirectly ? 'Lưu & Xuất bản lên Atlas' : 'Lưu Sản phẩm Di sản')}
                 </button>
               </div>
             </form>
@@ -499,7 +536,7 @@ export default function PeopleProducts() {
             {loading ? (
               <div className="loading-card">Đang tải danh sách sản phẩm…</div>
             ) : products.length === 0 ? (
-              <div className="empty-card">Chưa có sản phẩm nào. Bấm &ldquo;+ Thêm Sản phẩm Di sản&rdquo; để khởi tạo!</div>
+              <div className="empty-card">Chưa có sản phẩm nào. Bấm &ldquo;Thêm Sản phẩm Di sản&rdquo; để khởi tạo!</div>
             ) : (
               <div className="products-hub-grid">
                 {products.map(pr => {
@@ -522,10 +559,10 @@ export default function PeopleProducts() {
                             </span>
                           )}
                           <span className={`badge-status ${pr.status.toLowerCase()}`}>
-                            {pr.status === 'VERIFIED' ? '✓ VERIFIED' : pr.status}
+                            {pr.status}
                           </span>
                           <span className={`badge-vis ${pr.visibility.toLowerCase()}`}>
-                            {pr.visibility === 'PUBLIC' ? '🌐 PUBLIC' : '🔒 INTERNAL'}
+                            {pr.visibility}
                           </span>
                         </div>
                       </div>
@@ -537,36 +574,46 @@ export default function PeopleProducts() {
                         <span className="audit-info">
                           {pr.startedAt ? `Bắt đầu: ${new Date(pr.startedAt).toLocaleDateString('vi-VN')}` : ''}
                         </span>
-                        {pr.isAtlasPublished ? (
-                          <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
-                            <span className="ready-atlas-pill">🌐 Đã lên Atlas</span>
+                        <div className="inline-actions" style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                          {pr.isAtlasPublished ? (
+                            <>
+                              <span className="ready-atlas-pill">Đã lên Atlas</span>
+                              <button
+                                className="btn-action-small"
+                                disabled={busy === pr.id}
+                                onClick={() => prepareAtlas('PRODUCT', pr.id)}
+                                title="Đồng bộ cập nhật mới nhất lên Culture Atlas"
+                              >
+                                {busy === pr.id ? 'Đang đồng bộ…' : 'Cập nhật Atlas'}
+                              </button>
+                              <a
+                                href="/#products"
+                                target="_blank"
+                                rel="noreferrer"
+                                style={{ fontSize: '0.8rem', color: '#10b981', textDecoration: 'none', fontWeight: 600 }}
+                              >
+                                Xem trên Atlas
+                              </a>
+                            </>
+                          ) : (
                             <button
                               className="btn-action-small"
                               disabled={busy === pr.id}
                               onClick={() => prepareAtlas('PRODUCT', pr.id)}
-                              title="Đồng bộ cập nhật mới nhất lên Culture Atlas"
+                              title="Chuyển sang VERIFIED + PUBLIC và xuất bản ngay lên Culture Atlas"
                             >
-                              {busy === pr.id ? 'Đang đồng bộ…' : '🔄 Cập nhật Atlas'}
+                              {busy === pr.id ? 'Đang xử lý…' : 'Xuất bản lên Atlas'}
                             </button>
-                            <a
-                              href="/#products"
-                              target="_blank"
-                              rel="noreferrer"
-                              style={{ fontSize: '0.8rem', color: '#10b981', textDecoration: 'none', fontWeight: 600 }}
-                            >
-                              Xem trên Atlas ↗
-                            </a>
-                          </div>
-                        ) : (
+                          )}
                           <button
-                            className="btn-action-small"
+                            className="btn-delete-small"
                             disabled={busy === pr.id}
-                            onClick={() => prepareAtlas('PRODUCT', pr.id)}
-                            title="Chuyển sang VERIFIED + PUBLIC và xuất bản ngay lên Culture Atlas"
+                            onClick={() => handleDeleteProduct(pr.id, pr.name)}
+                            title="Xóa sản phẩm/dự án này"
                           >
-                            {busy === pr.id ? 'Đang xử lý…' : '🚀 Xuất bản lên Atlas'}
+                            Xóa
                           </button>
-                        )}
+                        </div>
                       </div>
                     </div>
                   )

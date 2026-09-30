@@ -114,6 +114,21 @@ export default function Stories() {
     }
   }
 
+  async function handleDelete(id: string, storyTitle: string) {
+    if (!window.confirm(`Bạn có chắc chắn muốn xóa câu chuyện "${storyTitle}"? Hành động này cũng sẽ gỡ câu chuyện khỏi Culture Atlas nếu đã xuất bản.`)) return
+    setBusy(id)
+    try {
+      await api(`/orgs/${org}/stories/${id}`, { method: 'DELETE' })
+      setNotification(`Đã xóa câu chuyện "${storyTitle}" thành công!`)
+      setTimeout(() => setNotification(''), 4000)
+      await load()
+    } catch (err) {
+      alert(`Lỗi khi xóa câu chuyện: ${err}`)
+    } finally {
+      setBusy('')
+    }
+  }
+
   const getTypeLabel = (type: string) => {
     const f = STORY_TYPES.find(x => x.value === type)
     return f ? (f.label.split('(')[0] ?? '').trim() : type
@@ -135,14 +150,13 @@ export default function Stories() {
         </div>
         <div className="hub-header-actions">
           <button className="btn-primary" onClick={() => setShowAddModal(!showAddModal)}>
-            {showAddModal ? '✕ Đóng form' : '+ Viết câu chuyện mới'}
+            {showAddModal ? 'Đóng form' : 'Viết câu chuyện mới'}
           </button>
         </div>
       </div>
 
       {notification && (
-        <div className="notification-banner" style={{ background: '#ecfdf5', color: '#065f46', border: '1px solid #a7f3d0', padding: '0.875rem 1.25rem', borderRadius: '8px', marginBottom: '1.5rem', fontWeight: 500, display: 'flex', alignItems: 'center', gap: '8px' }}>
-          <span>✓</span>
+        <div className="notification-banner" style={{ background: '#ecfdf5', color: '#065f46', border: '1px solid #a7f3d0', padding: '0.875rem 1.25rem', borderRadius: '8px', marginBottom: '1.5rem', fontWeight: 500 }}>
           <span>{notification}</span>
         </div>
       )}
@@ -243,7 +257,7 @@ export default function Stories() {
               Hủy
             </button>
             <button type="submit" className="btn-primary" disabled={busy === 'creating'}>
-              {busy === 'creating' ? 'Đang lưu & Xuất bản…' : (publishDirectly ? '🚀 Lưu & Xuất bản lên Atlas' : 'Lưu vào Thư viện Story')}
+              {busy === 'creating' ? 'Đang lưu & Xuất bản…' : (publishDirectly ? 'Lưu & Xuất bản lên Atlas' : 'Lưu vào Thư viện Story')}
             </button>
           </div>
         </form>
@@ -260,7 +274,7 @@ export default function Stories() {
           <div className="loading-card">Đang tải danh sách câu chuyện…</div>
         ) : items.length === 0 ? (
           <div className="empty-card">
-            Chưa có câu chuyện nào. Bấm <b>&ldquo;+ Viết câu chuyện mới&rdquo;</b> để bắt đầu ghi lại di sản văn hóa đầu tiên!
+            Chưa có câu chuyện nào. Bấm <b>&ldquo;Viết câu chuyện mới&rdquo;</b> để bắt đầu ghi lại di sản văn hóa đầu tiên!
           </div>
         ) : (
           <div className="story-cards-container">
@@ -284,10 +298,10 @@ export default function Stories() {
                         </span>
                       )}
                       <span className={`badge-status ${s.status.toLowerCase()}`}>
-                        {s.status === 'VERIFIED' ? '✓ VERIFIED' : s.status}
+                        {s.status}
                       </span>
                       <span className={`badge-vis ${s.visibility.toLowerCase()}`}>
-                        {s.visibility === 'PUBLIC' ? '🌐 PUBLIC' : '🔒 INTERNAL'}
+                        {s.visibility}
                       </span>
                     </div>
                     {s.occurredAt && (
@@ -308,22 +322,22 @@ export default function Stories() {
                     <div className="inline-actions">
                       {s.isAtlasPublished ? (
                         <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
-                          <span className="ready-atlas-pill">🌐 Đã xuất bản lên Atlas</span>
+                          <span className="ready-atlas-pill">Đã xuất bản lên Atlas</span>
                           <button
                             className="btn-action-small"
                             disabled={busy === s.id}
                             onClick={() => prepareAtlas(s.id)}
                             title="Đồng bộ cập nhật mới nhất lên Culture Atlas"
                           >
-                            {busy === s.id ? 'Đang đồng bộ…' : '🔄 Cập nhật Atlas'}
+                            {busy === s.id ? 'Đang đồng bộ…' : 'Cập nhật Atlas'}
                           </button>
                           <a
                             href="/#stories"
                             target="_blank"
                             rel="noreferrer"
-                            style={{ fontSize: '0.8rem', color: '#10b981', textDecoration: 'none', fontWeight: 600, display: 'inline-flex', alignItems: 'center', gap: '2px' }}
+                            style={{ fontSize: '0.8rem', color: '#10b981', textDecoration: 'none', fontWeight: 600 }}
                           >
-                            Xem trên Atlas ↗
+                            Xem trên Atlas
                           </a>
                         </div>
                       ) : (
@@ -333,9 +347,17 @@ export default function Stories() {
                           onClick={() => prepareAtlas(s.id)}
                           title="Chuyển sang VERIFIED + PUBLIC và xuất bản ngay lên Culture Atlas"
                         >
-                          {busy === s.id ? 'Đang xử lý…' : '🚀 Xuất bản lên Atlas'}
+                          {busy === s.id ? 'Đang xử lý…' : 'Xuất bản lên Atlas'}
                         </button>
                       )}
+                      <button
+                        className="btn-delete-small"
+                        disabled={busy === s.id}
+                        onClick={() => handleDelete(s.id, s.title)}
+                        title="Xóa câu chuyện này"
+                      >
+                        Xóa
+                      </button>
                     </div>
                   </div>
                 </div>

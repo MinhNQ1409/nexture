@@ -90,11 +90,35 @@ export default function Library() {
     setNotification('')
     try {
       await api(`/orgs/${org}/ai/analyze/${id}`, { method: 'POST' })
-      setNotification('✦ AI Structuring Engine đã phân tích thành công! Các đề xuất Story/Event đang chờ bạn duyệt trong Pending Review.')
+      setNotification('AI Structuring Engine đã phân tích thành công! Các đề xuất Story/Event đang chờ bạn duyệt trong Pending Review.')
     } catch (err) {
       alert(`Lỗi AI phân tích: ${err}`)
     } finally {
       setAnalyzingId('')
+    }
+  }
+
+  async function handleDeleteSource(id: string, name: string) {
+    if (!window.confirm(`Bạn có chắc chắn muốn xóa nguồn tài liệu "${name}"?`)) return
+    try {
+      await api(`/orgs/${org}/library/sources/${id}`, { method: 'DELETE' })
+      setNotification(`Đã xóa nguồn tài liệu "${name}" thành công!`)
+      setTimeout(() => setNotification(''), 4000)
+      await load()
+    } catch (err) {
+      alert(`Lỗi khi xóa nguồn tài liệu: ${err}`)
+    }
+  }
+
+  async function handleDeleteMedia(id: string, name: string) {
+    if (!window.confirm(`Bạn có chắc chắn muốn xóa tệp "${name}"?`)) return
+    try {
+      await api(`/orgs/${org}/library/media/${id}`, { method: 'DELETE' })
+      setNotification(`Đã xóa tệp "${name}" thành công!`)
+      setTimeout(() => setNotification(''), 4000)
+      await load()
+    } catch (err) {
+      alert(`Lỗi khi xóa tệp: ${err}`)
     }
   }
 
@@ -114,7 +138,7 @@ export default function Library() {
         <div className="hub-notification-box">
           <span>{notification}</span>
           <Link to="/reviews" className="btn-link-action">
-            Xem Pending Review →
+            Xem Pending Review
           </Link>
         </div>
       )}
@@ -150,7 +174,7 @@ export default function Library() {
 
           <div className="form-actions">
             <button type="submit" className="btn-primary" disabled={isSubmitting}>
-              {isSubmitting ? 'Đang lưu…' : '+ Thêm vào Kho Nguồn'}
+              {isSubmitting ? 'Đang lưu…' : 'Thêm vào Kho Nguồn'}
             </button>
           </div>
         </form>
@@ -163,7 +187,6 @@ export default function Library() {
           </div>
 
           <div className="upload-dropzone">
-            <div className="upload-icon">📁</div>
             <b>Kéo thả hoặc chọn tệp tư liệu từ máy tính</b>
             <p className="muted">Hỗ trợ PDF, DOCX, JPG, PNG, MP3, MP4</p>
             <label className="btn-secondary upload-btn-label">
@@ -179,10 +202,20 @@ export default function Library() {
 
           <div className="media-list-preview">
             <small>Media gần đây ({data.media.length}):</small>
-            {data.media.slice(0, 3).map(m => (
-              <div className="media-item-pill" key={m.id}>
-                <span>📄 {m.name || m.fileName || 'Tệp tư liệu'}</span>
-                <small className="muted">{m.mediaType || m.contentType || 'file'}</small>
+            {data.media.map(m => (
+              <div className="media-item-pill" key={m.id} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '8px' }}>
+                <div>
+                  <span>{m.name || m.fileName || 'Tệp tư liệu'}</span>
+                  <small className="muted" style={{ marginLeft: '6px' }}>{m.mediaType || m.contentType || 'file'}</small>
+                </div>
+                <button
+                  className="btn-delete-small"
+                  style={{ padding: '2px 8px', fontSize: '11px' }}
+                  onClick={() => handleDeleteMedia(m.id, m.name || m.fileName || 'Tệp tư liệu')}
+                  title="Xóa tệp này"
+                >
+                  Xóa
+                </button>
               </div>
             ))}
           </div>
@@ -213,7 +246,7 @@ export default function Library() {
                     </span>
                   </div>
                   <h4 className="source-title">{s.name}</h4>
-                  <div className="source-actions">
+                  <div className="source-actions" style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
                     <button
                       className="btn-ai-analyze"
                       disabled={isAnalyzing}
@@ -224,8 +257,15 @@ export default function Library() {
                           <span className="spinner-inline" /> Đang chạy AI…
                         </>
                       ) : (
-                        '✦ AI Analyze (Bóc tách dữ liệu)'
+                        'AI Analyze (Bóc tách dữ liệu)'
                       )}
+                    </button>
+                    <button
+                      className="btn-delete-small"
+                      onClick={() => handleDeleteSource(s.id, s.name)}
+                      title="Xóa nguồn này"
+                    >
+                      Xóa
                     </button>
                   </div>
                 </div>

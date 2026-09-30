@@ -747,6 +747,29 @@ button, input, textarea, select {
   color: #b91c1c;
 }
 
+.btn-delete-small {
+  background: #fff1f2;
+  border: 1px solid #fecdd3;
+  color: #e11d48;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 6px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.btn-delete-small:hover {
+  background: #e11d48;
+  border-color: #e11d48;
+  color: #ffffff;
+}
+
+.btn-delete-small:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
 /* ========================================================
    CULTURE HUB — BADGES & PILLS
    ======================================================== */

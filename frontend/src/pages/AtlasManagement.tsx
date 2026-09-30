@@ -220,7 +220,7 @@ export default function AtlasManagement() {
                         <b>{c.title}</b>
                         {p?.isOutdated && (
                           <span className="outdated-warning-tag">
-                            ⚠️ Hub đã sửa đổi sau lần publish gần nhất
+                            Hub đã sửa đổi sau lần publish gần nhất
                           </span>
                         )}
                       </div>
@@ -236,7 +236,7 @@ export default function AtlasManagement() {
                     </td>
                     <td>
                       {isPublished ? (
-                        <span className="badge-published">✓ PUBLISHED</span>
+                        <span className="badge-published">PUBLISHED</span>
                       ) : p ? (
                         <span className="badge-unpub">{p.status}</span>
                       ) : (
@@ -264,7 +264,7 @@ export default function AtlasManagement() {
                             disabled={!!busy}
                             onClick={() => publish(c)}
                           >
-                            {busy === c.entityId ? '…' : p ? '✦ Publish bản mới' : '✦ Publish lên Atlas'}
+                            {busy === c.entityId ? '…' : p ? 'Publish bản mới' : 'Publish lên Atlas'}
                           </button>
                         )}
                         {isPublished && (
@@ -313,7 +313,7 @@ export default function AtlasManagement() {
                   {p.isOutdated ? (
                     <span className="badge-outdated">OUTDATED</span>
                   ) : (
-                    <span className="badge-up-to-date">✓ Đồng bộ</span>
+                    <span className="badge-up-to-date">Đồng bộ</span>
                   )}
                   <span className={`badge-status ${p.status.toLowerCase()}`}>{p.status}</span>
                 </div>

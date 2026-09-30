@@ -76,6 +76,26 @@ public static class ContentEndpoints
             return Results.Ok(row);
         }).RequireAuthorization();
 
+        app.MapDelete("/api/orgs/{orgId:guid}/stories/{id:guid}", async (Guid orgId, Guid id, ClaimsPrincipal user, AppDbContext db, OrganizationAccess access) =>
+        {
+            var m = await access.GetMembershipAsync(user, orgId);
+            if (m is null || !OrganizationAccess.CanEdit(m.Role)) return Results.Forbid();
+            var row = await db.Stories.FirstOrDefaultAsync(x => x.OrganizationId == orgId && x.Id == id);
+            if (row is null) return Results.NotFound();
+
+            var pubs = await db.AtlasPublications.Where(x => x.OrganizationId == orgId && x.EntityType == EntityType.STORY && x.EntityId == id).ToListAsync();
+            if (pubs.Count > 0) db.AtlasPublications.RemoveRange(pubs);
+
+            var rels = await db.Relationships.Where(x => x.OrganizationId == orgId && ((x.SourceType == EntityType.STORY && x.SourceId == id) || (x.TargetType == EntityType.STORY && x.TargetId == id))).ToListAsync();
+            if (rels.Count > 0) db.Relationships.RemoveRange(rels);
+
+            db.Stories.Remove(row);
+            await db.SaveChangesAsync();
+
+            await LogAndSave(db, access.GetUserId(user), orgId, "STORY_DELETED", "STORY", id);
+            return Results.NoContent();
+        }).RequireAuthorization();
+
         // 2. Events
         app.MapGet("/api/orgs/{orgId:guid}/events", async (Guid orgId, ClaimsPrincipal user, AppDbContext db, OrganizationAccess access) =>
         {
@@ -139,6 +159,26 @@ public static class ContentEndpoints
 
             await LogAndSave(db, access.GetUserId(user), orgId, "EVENT_UPDATED", "EVENT", row.Id);
             return Results.Ok(row);
+        }).RequireAuthorization();
+
+        app.MapDelete("/api/orgs/{orgId:guid}/events/{id:guid}", async (Guid orgId, Guid id, ClaimsPrincipal user, AppDbContext db, OrganizationAccess access) =>
+        {
+            var m = await access.GetMembershipAsync(user, orgId);
+            if (m is null || !OrganizationAccess.CanEdit(m.Role)) return Results.Forbid();
+            var row = await db.Events.FirstOrDefaultAsync(x => x.OrganizationId == orgId && x.Id == id);
+            if (row is null) return Results.NotFound();
+
+            var pubs = await db.AtlasPublications.Where(x => x.OrganizationId == orgId && x.EntityType == EntityType.EVENT && x.EntityId == id).ToListAsync();
+            if (pubs.Count > 0) db.AtlasPublications.RemoveRange(pubs);
+
+            var rels = await db.Relationships.Where(x => x.OrganizationId == orgId && ((x.SourceType == EntityType.EVENT && x.SourceId == id) || (x.TargetType == EntityType.EVENT && x.TargetId == id))).ToListAsync();
+            if (rels.Count > 0) db.Relationships.RemoveRange(rels);
+
+            db.Events.Remove(row);
+            await db.SaveChangesAsync();
+
+            await LogAndSave(db, access.GetUserId(user), orgId, "EVENT_DELETED", "EVENT", id);
+            return Results.NoContent();
         }).RequireAuthorization();
 
         // 3. People
@@ -207,6 +247,26 @@ public static class ContentEndpoints
             return Results.Ok(row);
         }).RequireAuthorization();
 
+        app.MapDelete("/api/orgs/{orgId:guid}/people/{id:guid}", async (Guid orgId, Guid id, ClaimsPrincipal user, AppDbContext db, OrganizationAccess access) =>
+        {
+            var m = await access.GetMembershipAsync(user, orgId);
+            if (m is null || !OrganizationAccess.CanEdit(m.Role)) return Results.Forbid();
+            var row = await db.People.FirstOrDefaultAsync(x => x.OrganizationId == orgId && x.Id == id);
+            if (row is null) return Results.NotFound();
+
+            var pubs = await db.AtlasPublications.Where(x => x.OrganizationId == orgId && x.EntityType == EntityType.PERSON && x.EntityId == id).ToListAsync();
+            if (pubs.Count > 0) db.AtlasPublications.RemoveRange(pubs);
+
+            var rels = await db.Relationships.Where(x => x.OrganizationId == orgId && ((x.SourceType == EntityType.PERSON && x.SourceId == id) || (x.TargetType == EntityType.PERSON && x.TargetId == id))).ToListAsync();
+            if (rels.Count > 0) db.Relationships.RemoveRange(rels);
+
+            db.People.Remove(row);
+            await db.SaveChangesAsync();
+
+            await LogAndSave(db, access.GetUserId(user), orgId, "PERSON_DELETED", "PERSON", id);
+            return Results.NoContent();
+        }).RequireAuthorization();
+
         // 4. Products
         app.MapGet("/api/orgs/{orgId:guid}/products", async (Guid orgId, ClaimsPrincipal user, AppDbContext db, OrganizationAccess access) =>
         {
@@ -270,6 +330,26 @@ public static class ContentEndpoints
 
             await LogAndSave(db, access.GetUserId(user), orgId, "PRODUCT_UPDATED", "PRODUCT", row.Id);
             return Results.Ok(row);
+        }).RequireAuthorization();
+
+        app.MapDelete("/api/orgs/{orgId:guid}/products/{id:guid}", async (Guid orgId, Guid id, ClaimsPrincipal user, AppDbContext db, OrganizationAccess access) =>
+        {
+            var m = await access.GetMembershipAsync(user, orgId);
+            if (m is null || !OrganizationAccess.CanEdit(m.Role)) return Results.Forbid();
+            var row = await db.ProductsProjects.FirstOrDefaultAsync(x => x.OrganizationId == orgId && x.Id == id);
+            if (row is null) return Results.NotFound();
+
+            var pubs = await db.AtlasPublications.Where(x => x.OrganizationId == orgId && x.EntityType == EntityType.PRODUCT && x.EntityId == id).ToListAsync();
+            if (pubs.Count > 0) db.AtlasPublications.RemoveRange(pubs);
+
+            var rels = await db.Relationships.Where(x => x.OrganizationId == orgId && ((x.SourceType == EntityType.PRODUCT && x.SourceId == id) || (x.TargetType == EntityType.PRODUCT && x.TargetId == id))).ToListAsync();
+            if (rels.Count > 0) db.Relationships.RemoveRange(rels);
+
+            db.ProductsProjects.Remove(row);
+            await db.SaveChangesAsync();
+
+            await LogAndSave(db, access.GetUserId(user), orgId, "PRODUCT_DELETED", "PRODUCT", id);
+            return Results.NoContent();
         }).RequireAuthorization();
 
         // 5. Prepare & Publish directly to Atlas in 1 click

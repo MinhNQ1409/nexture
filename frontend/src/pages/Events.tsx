@@ -112,6 +112,21 @@ export default function Events() {
     }
   }
 
+  async function handleDelete(id: string, eventName: string) {
+    if (!window.confirm(`Bạn có chắc chắn muốn xóa sự kiện "${eventName}"? Hành động này cũng sẽ gỡ sự kiện khỏi Culture Atlas nếu đã xuất bản.`)) return
+    setBusy(id)
+    try {
+      await api(`/orgs/${org}/events/${id}`, { method: 'DELETE' })
+      setNotification(`Đã xóa sự kiện "${eventName}" thành công!`)
+      setTimeout(() => setNotification(''), 4000)
+      await load()
+    } catch (err) {
+      alert(`Lỗi khi xóa sự kiện: ${err}`)
+    } finally {
+      setBusy('')
+    }
+  }
+
   const getTypeLabel = (type: string) => {
     const f = EVENT_TYPES.find(x => x.value === type)
     return f ? f.label.split('(')[0].trim() : type
@@ -133,14 +148,13 @@ export default function Events() {
         </div>
         <div className="hub-header-actions">
           <button className="btn-primary" onClick={() => setShowAddModal(!showAddModal)}>
-            {showAddModal ? '✕ Đóng form' : '+ Ghi nhận sự kiện mới'}
+            {showAddModal ? 'Đóng form' : 'Ghi nhận sự kiện mới'}
           </button>
         </div>
       </div>
 
       {notification && (
-        <div className="notification-banner" style={{ background: '#ecfdf5', color: '#065f46', border: '1px solid #a7f3d0', padding: '0.875rem 1.25rem', borderRadius: '8px', marginBottom: '1.5rem', fontWeight: 500, display: 'flex', alignItems: 'center', gap: '8px' }}>
-          <span>✓</span>
+        <div className="notification-banner" style={{ background: '#ecfdf5', color: '#065f46', border: '1px solid #a7f3d0', padding: '0.875rem 1.25rem', borderRadius: '8px', marginBottom: '1.5rem', fontWeight: 500 }}>
           <span>{notification}</span>
         </div>
       )}
@@ -232,7 +246,7 @@ export default function Events() {
               Hủy
             </button>
             <button type="submit" className="btn-primary" disabled={busy === 'creating'}>
-              {busy === 'creating' ? 'Đang lưu & Xuất bản…' : (publishDirectly ? '🚀 Lưu & Xuất bản lên Atlas' : 'Lưu Sự kiện')}
+              {busy === 'creating' ? 'Đang lưu & Xuất bản…' : (publishDirectly ? 'Lưu & Xuất bản lên Atlas' : 'Lưu Sự kiện')}
             </button>
           </div>
         </form>
@@ -248,7 +262,7 @@ export default function Events() {
           <div className="loading-card">Đang tải danh sách sự kiện…</div>
         ) : items.length === 0 ? (
           <div className="empty-card">
-            Chưa có sự kiện nào. Bấm <b>&ldquo;+ Ghi nhận sự kiện mới&rdquo;</b> để xây dựng dòng thời gian văn hóa!
+            Chưa có sự kiện nào. Bấm <b>&ldquo;Ghi nhận sự kiện mới&rdquo;</b> để xây dựng dòng thời gian văn hóa!
           </div>
         ) : (
           <div className="timeline-hub-list">
@@ -281,10 +295,10 @@ export default function Events() {
                         </span>
                       )}
                       <span className={`badge-status ${ev.status.toLowerCase()}`}>
-                        {ev.status === 'VERIFIED' ? '✓ VERIFIED' : ev.status}
+                        {ev.status}
                       </span>
                       <span className={`badge-vis ${ev.visibility.toLowerCase()}`}>
-                        {ev.visibility === 'PUBLIC' ? '🌐 PUBLIC' : '🔒 INTERNAL'}
+                        {ev.visibility}
                       </span>
                     </div>
 
@@ -298,22 +312,22 @@ export default function Events() {
                       <div className="inline-actions">
                         {ev.isAtlasPublished ? (
                           <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
-                            <span className="ready-atlas-pill">🌐 Đã xuất bản lên Atlas</span>
+                            <span className="ready-atlas-pill">Đã xuất bản lên Atlas</span>
                             <button
                               className="btn-action-small"
                               disabled={busy === ev.id}
                               onClick={() => prepareAtlas(ev.id)}
                               title="Đồng bộ cập nhật mới nhất lên Culture Atlas"
                             >
-                              {busy === ev.id ? 'Đang đồng bộ…' : '🔄 Cập nhật Atlas'}
+                              {busy === ev.id ? 'Đang đồng bộ…' : 'Cập nhật Atlas'}
                             </button>
                             <a
                               href="/#timeline"
                               target="_blank"
                               rel="noreferrer"
-                              style={{ fontSize: '0.8rem', color: '#10b981', textDecoration: 'none', fontWeight: 600, display: 'inline-flex', alignItems: 'center', gap: '2px' }}
+                              style={{ fontSize: '0.8rem', color: '#10b981', textDecoration: 'none', fontWeight: 600 }}
                             >
-                              Xem trên Atlas ↗
+                              Xem trên Atlas
                             </a>
                           </div>
                         ) : (
@@ -323,9 +337,17 @@ export default function Events() {
                             onClick={() => prepareAtlas(ev.id)}
                             title="Chuyển sang VERIFIED + PUBLIC và xuất bản ngay lên Culture Atlas"
                           >
-                            {busy === ev.id ? 'Đang xử lý…' : '🚀 Xuất bản lên Atlas'}
+                            {busy === ev.id ? 'Đang xử lý…' : 'Xuất bản lên Atlas'}
                           </button>
                         )}
+                        <button
+                          className="btn-delete-small"
+                          disabled={busy === ev.id}
+                          onClick={() => handleDelete(ev.id, ev.name)}
+                          title="Xóa sự kiện này"
+                        >
+                          Xóa
+                        </button>
                       </div>
                     </div>
                   </div>

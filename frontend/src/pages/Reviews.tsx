@@ -91,7 +91,6 @@ export default function Reviews() {
           <div className="loading-card">Đang tải danh sách chờ duyệt…</div>
         ) : items.length === 0 ? (
           <div className="empty-card text-center">
-            <span style={{ fontSize: '32px', display: 'block', marginBottom: '8px' }}>🎉</span>
             <b>Tuyệt vời! Hiện không có đề xuất AI nào đang chờ duyệt.</b>
             <p className="muted" style={{ maxWidth: '480px', margin: '8px auto 0' }}>
               Khi bạn upload tài liệu vào <b>Culture Library</b> và nhấn nút <b>&ldquo;AI Analyze&rdquo;</b>, các cấu trúc Story hoặc Event được trích xuất sẽ xuất hiện tại đây để bạn thẩm định.
@@ -112,7 +111,7 @@ export default function Reviews() {
                   <div className="review-header">
                     <div className="badges-group">
                       <span className="badge-type">ĐỀ XUẤT {x.suggestionType}</span>
-                      <span className="badge-ai">✦ AI_SUGGESTED</span>
+                      <span className="badge-ai">AI_SUGGESTED</span>
                       {type && <span className="badge-sub">{type}</span>}
                     </div>
                     {date && (
@@ -143,14 +142,14 @@ export default function Reviews() {
                         disabled={busy === x.id}
                         onClick={() => reject(x.id)}
                       >
-                        {busy === x.id ? '…' : '✕ Từ chối'}
+                        {busy === x.id ? '…' : 'Từ chối'}
                       </button>
                       <button
                         className="btn-primary"
                         disabled={busy === x.id}
                         onClick={() => approve(x.id)}
                       >
-                        {busy === x.id ? 'Đang duyệt…' : '✓ Phê duyệt (VERIFIED)'}
+                        {busy === x.id ? 'Đang duyệt…' : 'Phê duyệt (VERIFIED)'}
                       </button>
                     </div>
                   </div>
