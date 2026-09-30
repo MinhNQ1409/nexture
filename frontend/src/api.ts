@@ -1,5 +1,20 @@
-const rawBase = import.meta.env.VITE_API_BASE ?? 'http://localhost:8080/api'
-const API_BASE = rawBase.endsWith('/') ? rawBase.slice(0, -1) : rawBase
+const envBase = (import.meta.env.VITE_API_BASE as string | undefined)?.trim()
+
+function resolveApiBase(): string {
+  if (!envBase) {
+    if (typeof window !== 'undefined' && window.location.hostname !== 'localhost') {
+      return '/api'
+    }
+    return 'http://localhost:8080/api'
+  }
+  let base = envBase.endsWith('/') ? envBase.slice(0, -1) : envBase
+  if (!base.endsWith('/api')) {
+    base = `${base}/api`
+  }
+  return base
+}
+
+const API_BASE = resolveApiBase()
 
 export type Session = {
   token: string
@@ -27,10 +42,34 @@ export async function api<T>(path: string, options: RequestInit = {}): Promise<T
   const headers = new Headers(options.headers)
   if (!(options.body instanceof FormData)) headers.set('Content-Type', 'application/json')
   if (session?.token) headers.set('Authorization', `Bearer ${session.token}`)
-  const normalizedPath = path.startsWith('/') ? path : `/${path}`
-  const res = await fetch(`${API_BASE}${normalizedPath}`, { ...options, headers })
-  if (!res.ok) throw new Error((await res.text()) || `HTTP ${res.status}`)
-  if (res.status === 204) return undefined as T
-  const text = await res.text()
-  return (text ? JSON.parse(text) : undefined) as T
+  
+  let normalizedPath = path.startsWith('/') ? path : `/${path}`
+  if (normalizedPath.startsWith('/api/')) {
+    normalizedPath = normalizedPath.slice(4)
+  }
+
+  try {
+    const res = await fetch(`${API_BASE}${normalizedPath}`, { ...options, headers })
+    if (!res.ok) {
+      const text = await res.text()
+      if (res.status === 404) {
+        if (!envBase && typeof window !== 'undefined' && window.location.hostname !== 'localhost') {
+          throw new Error('Chưa cấu hình biến môi trường VITE_API_BASE trên Vercel trỏ tới Backend Render.')
+        }
+        throw new Error('Đường dẫn API không tồn tại (HTTP 404). Vui lòng kiểm tra lại địa chỉ VITE_API_BASE trên Vercel.')
+      }
+      if (res.status === 401) {
+        throw new Error('Email hoặc mật khẩu không chính xác.')
+      }
+      throw new Error(text || `Lỗi máy chủ (HTTP ${res.status})`)
+    }
+    if (res.status === 204) return undefined as T
+    const text = await res.text()
+    return (text ? JSON.parse(text) : undefined) as T
+  } catch (err: any) {
+    if (err.name === 'TypeError' && String(err.message).toLowerCase().includes('fetch')) {
+      throw new Error('Không thể kết nối tới máy chủ Backend (Render). Có thể máy chủ đang khởi động hoặc URL VITE_API_BASE chưa chính xác.')
+    }
+    throw err
+  }
 }
